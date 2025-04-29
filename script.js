@@ -111,7 +111,7 @@ function endGame() {
         <p>Tema: ${gameTheme}</p>
         <p>Temporizador: ${timerEnabled ? "Activado" : "Desactivado"}</p>
         <p>¡Gracias por jugar!</p>
-        <button onclick="reiniciar()">Reiniciar</button>
+        <button onclick="reiniciar()">Reiniciar</reiniciar>
     `;
 
     document.getElementById("summary").scrollIntoView({ behavior: "smooth" });
