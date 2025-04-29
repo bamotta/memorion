@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memorion</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="config-form">
+        <h1>Configuración del Juego</h1>
+        <table>
+            <tr>
+                <td><label for="username"><strong>Nombre de usuario:</strong></label></td>
+                <td><input type="text" id="username" placeholder="Nombre de usuario"></td>
+            </tr>
+            <tr>
+                <td colspan="2"><br></td>
+            </tr>
+            <tr>
+                <td><p><strong>Modo de juego:</strong></p></td>
+                <td>
+                    <label><input type="radio" name="game-mode" value="Normal"> Normal</label><br>
+                    <label><input type="radio" name="game-mode" value="Flash"> Flash</label>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2"><br></td>
+            </tr>
+            <tr>
+                <td><p><strong>Nivel de juego:</strong></p></td>
+                <td>
+                    <label><input type="radio" name="game-level" value="Fácil"> Fácil (4x4)</label><br>
+                    <label><input type="radio" name="game-level" value="Medio"> Medio (5x4)</label><br>
+                    <label><input type="radio" name="game-level" value="Difícil"> Difícil (6x6)</label>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2"><br></td>
+            </tr>
+            <tr>
+                <td><label for="game-theme"><strong>Tema:</strong></label></td>
+                <td>
+                    <select id="game-theme">
+                        <option value="">Selecciona un tema</option>
+                        <option value="comida">Comida</option>
+                        <option value="deportes">Deportes</option>
+                        <option value="banderas">Banderas</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2"><br></td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <label><input type="checkbox" id="timer"> <strong>Activar temporizador</strong></label>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2"><br></td>
+            </tr>
+            <tr>
+                <td colspan="2" style="text-align: center;">
+                    <button onclick="submitConfiguration()">Aceptar</button>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div id="main-content" style="display: none;"></div>
+    <div id="summary" style="display: none;"></div>
+    <script src="script.js"></script>
+    </body>
+</html>
