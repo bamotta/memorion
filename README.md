@@ -24,3 +24,4 @@ Se ha creado el formulario y la vista del tablero junto con sus correspondientes
 
 **Ideas de mejora futura**
 - Revisar la funcionalidad y diseño del contador y del cronometro y que este último no aparezca cuando no se ha seleccionado la opción.
+- dar un tamaño fijo a las diferentes cartas.
