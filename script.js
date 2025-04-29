@@ -3,7 +3,6 @@ let gameMode = "";
 let gameLevel = "";
 let gameTheme = "";
 let timerEnabled = false;
-let timerInterval; // Variable para almacenar el intervalo del temporizador
 
 function submitConfiguration() {
     const usernameInput = document.getElementById("username").value.trim();
@@ -33,12 +32,18 @@ function submitConfiguration() {
         <p>Tema: ${gameTheme}</p>
         <p>Temporizador: ${timerEnabled ? "Activado" : "Desactivado"}</p>
         <button onclick="startGame()">Iniciar Juego</button>
+        <button onclick="reiniciar()">Volver</button>
     `;
+}
+
+function reiniciar(){
+    location.reload();
 }
 
 function startGame() {
     document.getElementById("main-content").innerHTML = `
-        <h1>¡Juego en progreso!</h1>
+        <h1>Bienvenido, ${username}</h1>
+        <h2>¡Juego en progreso!</h2>
         <div id="timer-container">Tiempo: 2:00</div> 
         <div id="game-board"></div> 
         <div id="points">Puntos: 0</div>
@@ -96,7 +101,6 @@ function handleCardClick(card) {
 }
 
 function endGame() {
-    clearInterval(timerInterval);
     document.getElementById("main-content").style.display = "none";
     document.getElementById("summary").style.display = "block";
     document.getElementById("summary").innerHTML = `
@@ -107,5 +111,10 @@ function endGame() {
         <p>Tema: ${gameTheme}</p>
         <p>Temporizador: ${timerEnabled ? "Activado" : "Desactivado"}</p>
         <p>¡Gracias por jugar!</p>
+        <button onclick="reiniciar()">Reiniciar</button>
     `;
+
+    document.getElementById("summary").scrollIntoView({ behavior: "smooth" });
+
+
 }
