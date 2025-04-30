@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Memorion</title>
+    <link rel="icon" href="images/favicon.png" type="i"/>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -28,12 +29,27 @@
                 <td colspan="2"><br></td>
             </tr>
             <tr>
+                <td><p><strong>Tipo de tablero:</strong></p></td>
+                <td>
+                    <label><input type="radio" name="board-type" value="default" checked onclick="toggleBoardOptions()"> Predeterminado</label><br>
+                    <label><input type="radio" name="board-type" value="custom" onclick="toggleBoardOptions()"> Personalizado</label>
+                </td>
+            </tr>
+            <tr id="default-options">
                 <td><p><strong>Nivel de juego:</strong></p></td>
                 <td>
                     <label><input type="radio" name="game-level" value="Fácil"> Fácil (4x4)</label><br>
                     <label><input type="radio" name="game-level" value="Medio"> Medio (5x4)</label><br>
                     <label><input type="radio" name="game-level" value="Difícil"> Difícil (6x6)</label>
                 </td>
+            </tr>
+            <tr id="custom-options" style="display: none;">
+                <td><label for="rows"><strong>Filas:</strong></label></td>
+                <td><input type="number" id="rows" min="1" max="6" value="4"></td>
+            </tr>
+            <tr id="custom-options-cols" style="display: none;">
+                <td><label for="cols"><strong>Columnas:</strong></label></td>
+                <td><input type="number" id="cols" min="1" max="6" value="4"></td>
             </tr>
             <tr>
                 <td colspan="2"><br></td>
@@ -42,10 +58,11 @@
                 <td><label for="game-theme"><strong>Tema:</strong></label></td>
                 <td>
                     <select id="game-theme">
-                        <option value="">Selecciona un tema</option>
+                        <option value="" disabled>Selecciona un tema</option>
                         <option value="comida">Comida</option>
                         <option value="deportes">Deportes</option>
                         <option value="banderas">Banderas</option>
+                        <option value="aleatorio">Aleatorio</option>
                     </select>
                 </td>
             </tr>
@@ -62,7 +79,7 @@
             </tr>
             <tr>
                 <td colspan="2" style="text-align: center;">
-                    <button onclick="submitConfiguration()">Aceptar</button>
+                    <button onclick="submitConfiguration()" id="continue">Aceptar</button>
                 </td>
             </tr>
         </table>

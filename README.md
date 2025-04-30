@@ -24,4 +24,27 @@ Se ha creado el formulario y la vista del tablero junto con sus correspondientes
 
 **Ideas de mejora futura**
 - Revisar la funcionalidad y diseño del contador y del cronometro y que este último no aparezca cuando no se ha seleccionado la opción.
-- dar un tamaño fijo a las diferentes cartas.
+- Revisar los tamaños de las diferentes cartas.
+
+
+##SESION 2
+
+**Resumen**
+Se ha añadido la opción de crear tableros personalizados controlando todas las opciones de error posibles y teniendo en cuenta las imágenes que tenemos.
+
+**Dificultades encontradas**
+- dificultad para conseguir encajar las opciones personalizadas.
+
+**Soluciones aplicadas**
+- reorganización de los tableros.
+
+**Fuentes consultadas**
+-https://developer.mozilla.org/en-US/docs/Web/API/Document/DOMContentLoaded_event
+
+**Decisiones técnicas**
+- Decidimos finalmente crear las diferentes filas para cada opción de tablero utilizando los display que ya utilizabamos para los divs de las pantallas y asi poder manejar de manera correcta las opciones de los tableros.
+
+**Ideas de mejora futura**
+- Posible uso de transicciones entre pantallas.
+- Mejorar el aleatorio y que sea aleatorio sin mostrar que tema es.
+
