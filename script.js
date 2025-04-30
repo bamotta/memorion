@@ -1,10 +1,10 @@
-let username = "";
-let gameMode = "";
-let gameLevel = "";
-let gameTheme = "";
-let boardType = "";
-let rows = 0;
-let cols = 0;
+const username = "";
+const gameMode = "";
+const gameLevel = "";
+const gameTheme = "";
+const boardType = "";
+const rows = 0;
+const cols = 0;
 
 function submitConfiguration() {
     const usernameInput = document.getElementById("username").value.trim();

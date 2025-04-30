@@ -30,20 +30,21 @@ Se ha creado el formulario y la vista del tablero junto con sus correspondientes
 ##SESION 2
 
 **Resumen**
-Se ha añadido la opción de crear tableros personalizados controlando todas las opciones de error posibles y teniendo en cuenta las imágenes que tenemos. Se han añadido las imágenes dependiendo del tema seleccionado.
+Se ha añadido la opción de crear tableros personalizados controlando todas las opciones de error posibles y teniendo en cuenta las imágenes que tenemos.
 
 **Dificultades encontradas**
-- no nos valian las imagenes que ya teniamos por tamaño.
 - dificultad para conseguir encajar las opciones personalizadas.
 
 **Soluciones aplicadas**
-- recortar las imágenes y reorganizarlas
 - reorganización de los tableros.
 
+**Fuentes consultadas**
+-https://developer.mozilla.org/en-US/docs/Web/API/Document/DOMContentLoaded_event
+
 **Decisiones técnicas**
-- Decidimos finalmente crear las diferentes filas ara cada opcion de tablero utilizando los display que ya utilizabamos para los divs de las pantallas y asi poder manejar de manera correcta las opciones de los tableros.
+- Decidimos finalmente crear las diferentes filas para cada opción de tablero utilizando los display que ya utilizabamos para los divs de las pantallas y asi poder manejar de manera correcta las opciones de los tableros.
 
 **Ideas de mejora futura**
 - Posible uso de transicciones entre pantallas.
-
+- Mejorar el aleatorio y que sea aleatorio sin mostrar que tema es.
 
