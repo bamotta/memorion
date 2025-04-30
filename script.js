@@ -31,6 +31,25 @@ function submitConfiguration() {
             return;
         }
         gameLevel = levelInput.value;
+
+        switch (gameLevel) {
+            case "Fácil":
+                rows = 4;
+                cols = 4;
+                break;
+            case "Medio":
+                rows = 4;
+                cols = 5;
+                break;
+            case "Difícil":
+                rows = 6;
+                cols = 6;
+                break;
+            default:
+                alert("Nivel de juego no válido");
+                return;
+        }
+
     } else if (boardTypeInput.value === "custom") {
         rows = parseInt(document.getElementById("rows").value);
         cols = parseInt(document.getElementById("cols").value);
@@ -109,33 +128,6 @@ function createGameBoard() {
     const gameBoard = document.getElementById("game-board");
     gameBoard.innerHTML = "";
 
-    if (boardType === "default") {
-        switch (gameLevel) {
-            case "Fácil":
-                rows = 4;
-                cols = 4;
-                break;
-            case "Medio":
-                rows = 4;
-                cols = 5;
-                break;
-            case "Difícil":
-                rows = 6;
-                cols = 6;
-                break;
-            default:
-                alert("Nivel de juego no válido");
-                return;
-        }
-    }
-
-    if (boardType === "custom") {
-        if (!rows || !cols) {
-            alert("Dimensiones del tablero personalizadas no definidas.");
-            return;
-        }
-    }
-
     let tableHTML = "<table>";
     for (let i = 0; i < rows; i++) {
         tableHTML += "<tr>";
@@ -173,24 +165,5 @@ function endGame() {
 
     document.getElementById("summary").scrollIntoView({ behavior: "smooth" });
 
-document.addEventListener('DOMContentLoaded', () => {
-    const themeSelect = document.getElementById('game-theme');
-
-    themeSelect.addEventListener('change', () => {
-        if (themeSelect.value === 'aleatorio') {
-            const temasDisponibles = ['comida', 'deportes', 'banderas'];
-            const temaAleatorio = temasDisponibles[Math.floor(Math.random() * temasDisponibles.length)];
-            
-            themeSelect.value = temaAleatorio;
-
-            iniciarJuegoConTema(temaAleatorio);
-        } else if (themeSelect.value !== '') {
-            iniciarJuegoConTema(themeSelect.value);
-        }
-    });
-});
-
-function iniciarJuegoConTema(tema) {
-    console.log("Iniciando juego con tema:", tema);
 }
-}
+
