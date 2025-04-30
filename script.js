@@ -173,5 +173,24 @@ function endGame() {
 
     document.getElementById("summary").scrollIntoView({ behavior: "smooth" });
 
+document.addEventListener('DOMContentLoaded', () => {
+    const themeSelect = document.getElementById('game-theme');
 
+    themeSelect.addEventListener('change', () => {
+        if (themeSelect.value === 'aleatorio') {
+            const temasDisponibles = ['comida', 'deportes', 'banderas'];
+            const temaAleatorio = temasDisponibles[Math.floor(Math.random() * temasDisponibles.length)];
+            
+            themeSelect.value = temaAleatorio;
+
+            iniciarJuegoConTema(temaAleatorio);
+        } else if (themeSelect.value !== '') {
+            iniciarJuegoConTema(themeSelect.value);
+        }
+    });
+});
+
+function iniciarJuegoConTema(tema) {
+    console.log("Iniciando juego con tema:", tema);
+}
 }
