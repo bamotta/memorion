@@ -109,7 +109,6 @@ function createGameBoard() {
     const gameBoard = document.getElementById("game-board");
     gameBoard.innerHTML = "";
 
-    // Si el tablero es predeterminado, asignar filas y columnas según el nivel
     if (boardType === "default") {
         switch (gameLevel) {
             case "Fácil":
@@ -130,7 +129,6 @@ function createGameBoard() {
         }
     }
 
-    // Si el tablero es personalizado, rows y cols ya deben estar definidos
     if (boardType === "custom") {
         if (!rows || !cols) {
             alert("Dimensiones del tablero personalizadas no definidas.");
@@ -138,7 +136,6 @@ function createGameBoard() {
         }
     }
 
-    // Construir el HTML del tablero
     let tableHTML = "<table>";
     for (let i = 0; i < rows; i++) {
         tableHTML += "<tr>";
@@ -154,9 +151,6 @@ function createGameBoard() {
     tableHTML += "</table>";
     gameBoard.innerHTML = tableHTML;
 }
-
-
-
 
 function handleCardClick(card) {
     card.innerText = "✔"; 
