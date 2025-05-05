@@ -48,3 +48,24 @@ Se ha añadido la opción de crear tableros personalizados controlando todas las
 - Posible uso de transicciones entre pantallas.
 - Mejorar el aleatorio y que sea aleatorio sin mostrar que tema es.
 
+##SESIÓN 3
+
+**Resumen**
+Se programa el volteo de cartas correctamente y la comparación de parejas, comprobando que durante la comprobación de cartas quede el tablero bloqueado. Gestión de cartas acertadas o falladas y contador. Se han cambiado los contenidos de los divs y se han implementado nodos. Se añaden transicciones a los botones.
+
+**Dificultades encontradas**
+- Dificultad para ver y entender los nodos de primeras.
+- Hacer funcionar de manera correcta el aleatorio
+
+**Soluciones aplicadas**
+- revisión de código y manuales
+
+**Fuentes consultadas**
+- https://www.w3schools.com/js/js_htmldom_nodes.asp
+
+**Decisiones técnicas**
+- Se decide cambiar la implementación de la inclusión del contenido de los diferentes divs para utilizar nodos en vez de innerHTML por una cuestión de organización del código y limpieza aparte de para evitar errores.
+
+**Ideas de mejora futura**
+- Buscar la mejor manera de hacer las cosas a la primera para no tener que volver a trabajar sobre lo mismo.
+- mejorar el color verde
