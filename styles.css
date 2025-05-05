@@ -125,6 +125,11 @@ button:hover {
     display: block;
 }
 
+.card.match {
+    background-color: #28a745 !important;
+    transition: background-color 0.3s ease;
+  }  
+
 @keyframes pulsar {
     from{
         opacity:0;

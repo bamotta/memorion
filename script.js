@@ -267,13 +267,20 @@ function checkForMatch() {
     const isMatch = firstCard.getAttribute('data-image') === secondCard.getAttribute('data-image');
 
     if (isMatch) {
-        // Si las cartas coinciden, las dejamos volteadas
-        firstCard.disabled = true;
-        secondCard.disabled = true;
-        resetBoard();
+        firstCard.classList.add('match');
+        secondCard.classList.add('match');
 
-        // Verificar si todas las cartas están volteadas
-        checkIfGameFinished();
+        setTimeout(() => {
+            firstCard.classList.remove('match');
+            secondCard.classList.remove('match');
+
+            // Deshabilitar cartas después del efecto
+            firstCard.disabled = true;
+            secondCard.disabled = true;
+
+            resetBoard();
+            checkIfGameFinished();
+        }, 800);
     } else {
         // Si no coinciden, las volteamos nuevamente después de un breve retraso
         setTimeout(() => {

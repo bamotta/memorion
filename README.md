@@ -68,3 +68,4 @@ Se programa el volteo de cartas correctamente y la comparación de parejas, comp
 
 **Ideas de mejora futura**
 - Buscar la mejor manera de hacer las cosas a la primera para no tener que volver a trabajar sobre lo mismo.
+- mejorar el color verde
