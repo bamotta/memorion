@@ -1,19 +1,18 @@
-let username = "";
-let gameMode = "";
-let gameLevel = "";
-let gameTheme = "";
-let boardType = "";
-let rows = 0;
-let cols = 0;
-let customRows = 0;
-let customCols = 0;
-let firstCard = null;
-let secondCard = null;
-let lockBoard = false;
-let movesCounter = 0
+var username = "";
+var gameMode = "";
+var gameLevel = "";
+var gameTheme = "";
+var boardType = "";
+var rows = 0;
+var cols = 0;
+var customRows = 0;
+var customCols = 0;
+var firstCard = null;
+var secondCard = null;
+var lockBoard = false;
+var movesCounter = 0
 
 //funcion que se encarga de gestionar la configuración del tablero.
-
 function submitConfiguration() {
     const usernameInput = document.getElementById("username").value.trim();
     const modeInput = document.querySelector('input[name="game-mode"]:checked');
@@ -86,21 +85,41 @@ function submitConfiguration() {
         gameLevel = `Personalizado (${rows}x${cols})`;
     }
 
-    //ocultamos formulario y mostramos la configurcion seleccionada
-    document.getElementById("config-form").style.display = "none";
-    document.getElementById("main-content").style.display = "block";
-    document.getElementById("main-content").innerHTML = `
-        <h1>Configuración completada</h1>
-        <p>Nombre de usuario: ${username}</p>
-        <p>Modo de juego: ${gameMode}</p>
-        <p>Tipo de tablero: ${gameLevel}</p>
-        <p>Tema: ${gameTheme}</p>
-        <p>Temporizador: ${timerEnabled ? "Activado" : "Desactivado"}</p>
-        <button onclick="startGame()">Iniciar Juego</button>
-        <button onclick="rel()">Volver</button>
-    `;
- }
 
+    document.getElementById("config-form").remove();
+
+    const element = document.getElementById("main-content");
+    element.style.display = "block";
+    element.innerHTML="";
+
+    const elements = [
+        ["h1","Configuración completada"],
+        ["p", `Nombre de usuario: ${username}`],
+        ["p", `Modo de juego: ${gameMode}`],
+        ["p", `Tipo de tablero ${gameLevel}`],
+        ["p", `Tema: ${gameTheme}`],
+        ["p", `Temporizador: ${timerEnabled ? "Activado" : "Desactivado"}`],
+    ]
+
+    for(const [tag, text] of elements){
+        const ele = document.createElement(tag);
+        ele.textContent = text;
+        element.appendChild(ele);
+    }
+
+    const start = document.createElement("button");
+    const ret = document.createElement("button");
+
+    start.textContent = "Iniciar Juego";
+    ret.textContent = "Volver";
+
+    start.addEventListener('click', startGame);
+    ret.addEventListener('click', rel);
+
+    element.appendChild(start);
+    element.appendChild(ret);
+
+ }
 //recoge las opciones de dimensiones del tablero
 function toggleBoardOptions() {
     boardType = document.querySelector('input[name="board-type"]:checked').value;
@@ -127,30 +146,43 @@ function rel(){
 //muestra la pantalla de juego 
 function startGame() {
     //aleatorio
-    document.addEventListener('DOMContentLoaded', () => {
-        const themeSelect = document.getElementById('game-theme');
+    if (gameTheme === 'aleatorio') {
+        const themes = ["comida", "deportes", "banderas"];
+        gameTheme = themes[Math.floor(Math.random() * themes.length)];
+    }
 
-        themeSelect.addEventListener('change', () => {
-            if (themeSelect.value === 'aleatorio') {
-                const temasDisponibles = ['comida', 'deportes', 'banderas'];
-                const temaAleatorio = temasDisponibles[Math.floor(Math.random() * temasDisponibles.length)];
-                themeSelect.value = temaAleatorio;
+    const element = document.getElementById("main-content");
+    element.innerHTML="";
 
-                gameTheme = themeSelect.value;
+    const elements = [
+        ["h1",`Bienvenido, ${username}`],
+        ["h2", "¡Juego en progreso!"],
+    ]
 
-            } else if (themeSelect.value !== '') {
+    for(const [tag, text] of elements){
+        const ele = document.createElement(tag);
+        ele.textContent = text;
+        element.appendChild(ele);
+    }
 
-            }
-        });
-    });
-    document.getElementById("main-content").innerHTML = `
-        <h1 class="principal">Bienvenido, ${username}</h1>
-        <h2>¡Juego en progreso!</h2>
-        <div id="timer-container">Tiempo: 2:00</div> 
-        <div id="game-board"></div> 
-        <div id="moves-counter">Movimientos: 0</div>
-        <button onclick="endGame()">Finalizar Juego</button>
-    `;
+    const timerDiv = document.createElement('div');
+    timerDiv.id = 'timer-container';
+    timerDiv.textContent = 'Tiempo: 0:00';
+    element.appendChild(timerDiv);
+
+    const boardDiv = document.createElement('div');
+    boardDiv.id = 'game-board';
+    element.appendChild(boardDiv);
+
+    const countDiv = document.createElement('div');
+    countDiv.id = 'moves-counter';
+    countDiv.textContent = 'Movimientos: 0';
+    element.appendChild(countDiv);
+
+    const end = document.createElement("button");
+    end.textContent = "Finalizar Juego";
+    end.addEventListener('click', endGame);
+    element.appendChild(end);
 
     createGameBoard(); 
 }
@@ -174,25 +206,36 @@ function createGameBoard() {
      const shuffledImages = cardImages.sort(() => Math.random() - 0.5); // Mezclar imágenes
  
 
-    let tableHTML = "<table>";
-    for (let i = 0; i < rows; i++) {
-        tableHTML += "<tr>";
-        for (let j = 0; j < cols; j++) {
-            const image = shuffledImages.pop(); // Obtener una imagen aleatoria
-            const cardClass = gameTheme === "banderas" ? "card banderas" : "card"; // Añadir la clase 'banderas' si el tema es banderas
-            tableHTML += `
-                <td>
-                    <button class="${cardClass}" data-image="${image}" onclick="handleCardClick(this)">
-                        ❓
-                    </button>
+    const table = document.createElement("table");
 
-                </td>
-            `;
+    for (let i = 0; i < rows; i++) {
+        const tr = document.createElement("tr");
+
+            for (let j = 0; j < cols; j++) {
+                const td = document.createElement("td")
+                const image = shuffledImages.pop(); // Obtener una imagen aleatoria
+
+                const button = document.createElement("button");
+                const cardClass = gameTheme === "banderas" ? "card banderas" : "card"; // Añadir la clase 'banderas' si el tema es banderas
+                button.className = cardClass;
+                button.dataset.image = image;
+                button.textContent = "❓";
+
+                button.addEventListener('click', function() {
+                    handleCardClick(this);
+                });
+
+                td.appendChild(button);
+                tr.appendChild(td);
+
         }
-        tableHTML += "</tr>";
+
+        table.appendChild(tr);
+
     }
-    tableHTML += "</table>";
-    gameBoard.innerHTML = tableHTML;
+
+    gameBoard.appendChild(table);
+
 }
 
 //funcion para manejar lo que hace una carta al presionarla
@@ -260,19 +303,36 @@ function checkIfGameFinished() {
 
 //funcion que termina el juego y muestra el resumen
 function endGame() {
-    document.getElementById("main-content").style.display = "none";
-    document.getElementById("summary").style.display = "block";
-    document.getElementById("summary").innerHTML = `
-        <h1>Resumen del Juego</h1>
-        <p>Nombre de usuario: ${username}</p>
-        <p>Modo de juego: ${gameMode}</p>
-        <p>Nivel de juego: ${gameLevel}</p>
-        <p>Tema: ${gameTheme}</p>
-        <p>Temporizador: ${timerEnabled ? "Activado" : "Desactivado"}</p>
-        <p>Movimientos realizados: ${movesCounter}</p>
-        <p>¡Gracias por jugar!</p>
-        <button onclick="rel()">Reiniciar</button>
-    `;
+
+    const element = document.getElementById("main-content");
+    element.style.display = "block";
+    element.innerHTML="";
+
+    const elements = [
+        ["h1","Resumen del Juego"],
+        ["p", `Nombre de usuario: ${username}`],
+        ["p", `Modo de juego: ${gameMode}`],
+        ["p", `Tipo de tablero ${gameLevel}`],
+        ["p", `Tema: ${gameTheme}`],
+        ["p", `Temporizador: ${timerEnabled ? "Activado" : "Desactivado"}`],
+        ["p", `Movimientos realizados: ${movesCounter}`],
+        ["p", "¡Gracias por jugar!"]
+    ]
+
+    for(const [tag, text] of elements){
+        const ele = document.createElement(tag);
+        ele.textContent = text;
+        element.appendChild(ele);
+    }
+
+    const rest = document.createElement("button");
+
+    rest.textContent = "Volver";
+
+    rest.addEventListener('click', rel);
+
+    element.appendChild(rest);
+
 
 }
 
