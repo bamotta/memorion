@@ -332,23 +332,27 @@ function checkIfGameFinished() {
 //funcion que termina el juego y muestra el resumen
 function endGame() {
 
-    if(timerEnabled){
-        stopTimer();
-    }
+    
 
     const element = document.getElementById("main-content");
     element.style.display = "block";
     element.innerHTML="";
 
     const elements = [
-        ["h1","Resumen del Juego"],
-        ["p", `Nombre de usuario: ${username}`],
-        ["p", `Modo de juego: ${gameMode}`],
-        ["p", `Tipo de tablero ${gameLevel}`],
-        ["p", `Tema: ${gameTheme}`],
-        ["p", `Temporizador: ${timerEnabled ? "Activado" : "Desactivado"}`],
+        ["h1","Juego terminado"],
+        ["h2",` ${username}`],
         ["p", `Movimientos realizados: ${movesCounter}`],
     ]
+
+    if(timerEnabled){
+        const minutes =Math.floor(secondsElapsed / 60);
+        const seconds = secondsElapsed % 60;
+        const formattedTime = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        elements.push(["p", `Tiempo total: ${formattedTime}`]);
+        stopTimer(); 
+    }
+
+    elements.push(["p", "¡Gracias por jugar!"]);
 
     for(const [tag, text] of elements){
         const ele = document.createElement(tag);
@@ -356,15 +360,7 @@ function endGame() {
         element.appendChild(ele);
     }
 
-    if(timerEnabled){
-        const minutes =Math.floor(secondsElapsed / 60);
-        const seconds = secondsElapsed % 60;
-        const formattedTime = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-        elements.push(["p", `Tiempo total: ${formattedTime}`]);
-    }
-
-    elements.push(["p", "¡Gracias por jugar!"]);
-
+   
     const rest = document.createElement("button");
 
     rest.textContent = "Volver";
