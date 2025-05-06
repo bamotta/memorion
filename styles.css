@@ -1,10 +1,11 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap'); 
+
 body {
-    font-family: Arial, sans-serif;
-    background-color: #FFDAB9; 
+    font-family: 'Press Start 2P', cursive;
     margin: 0;
     padding: 0;
     display: flex;
-    background-color: #E6F7FF; 
+    background-image: url(images/fondo.jpg); 
     justify-content: center;
     align-items: center;
     height: 100vh;
@@ -13,6 +14,11 @@ body {
 h1 {
     color: #FF7F50; 
     text-align: center;
+    margin-top: auto;
+}
+
+h1.titulo{
+    font-size: 4em;
 }
 
 h1.principal{
@@ -20,7 +26,6 @@ h1.principal{
 }
 
 table {
-    margin: 20px auto;
     border-collapse: collapse;
 }
 
@@ -28,16 +33,22 @@ td {
     padding: 10px;
 }
 
-label {
-    font-weight: bold;
+#timer{
+    transform: scale(1.5);
 }
 
 input[type="text"], select {
+    font-family: 'Press Start 2P', cursive;
     width: 100%;
     padding: 5px;
-    margin: 5px 0;
+    margin: 5px 0px;
     border: 1px solid #ccc;
     border-radius: 4px;
+}
+
+input[type=radio]{
+    transform: scale(1.2);
+    margin: 7px;
 }
 
 button {
@@ -51,6 +62,7 @@ button {
     font-size: 16px;
     animation-name: pulsar;
     animation-duration: 2s;
+    font-family: 'Press Start 2P', cursive;
 }
 
 button:hover {
@@ -85,6 +97,7 @@ button:hover {
 .card {
     width: 120px; 
     height: 100px;
+    color: steelblue;
     border: 1px solid #ccc;
     background-color: #f2eeee;
     font-size: 2rem; 
@@ -95,6 +108,10 @@ button:hover {
     transition: transform 0.5s ease;
     overflow: hidden;
     transform-style:preserve-3d;
+}
+
+.card:hover{
+    background-color: #fa936d; 
 }
 
 .card img {

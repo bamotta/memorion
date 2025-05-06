@@ -98,7 +98,7 @@ function submitConfiguration() {
     element.innerHTML="";
 
     const elements = [
-        ["h1","Configuración completada"],
+        ["h1","CONFIGURACIÓN"],
         ["p", `Nombre de usuario: ${username}`],
         ["p", `Modo de juego: ${gameMode}`],
         ["p", `Tipo de tablero ${gameLevel}`],
@@ -194,7 +194,7 @@ function startGame() {
     element.appendChild(countDiv);
 
     const end = document.createElement("button");
-    end.textContent = "Finalizar Juego";
+    end.textContent = "FINALIZAR";
     end.addEventListener('click', endGame);
     element.appendChild(end);
 
@@ -209,7 +209,7 @@ function createGameBoard() {
     let totalCards = rows*cols;
 
      // Cargar imágenes según el tema seleccionado
-     const themePath = `images/${gameTheme}/`; // Ruta de la carpeta del tema
+     const themePath = `images/${gameTheme}/`;
      const availableImages = Array.from({ length: 18 }, (_, i) => `${themePath}image${i + 1}.png`);
  
      console.log("Rutas de imágenes disponibles:", availableImages);
@@ -233,7 +233,7 @@ function createGameBoard() {
                 const cardClass = gameTheme === "banderas" ? "card banderas" : "card"; // Añadir la clase 'banderas' si el tema es banderas
                 button.className = cardClass;
                 button.dataset.image = image;
-                button.textContent = "❓";
+                button.textContent = "?";
 
                 button.addEventListener('click', function() {
                     handleCardClick(this);
@@ -264,7 +264,7 @@ function handleCardClick(card) {
         return; // Evita que se seleccionen más cartas o la misma carta dos veces
     }
 
-    card.classList.add('flipped'); // Voltea la carta
+    card.classList.add('flipped'); 
     card.innerHTML = `<img src="${card.getAttribute('data-image')}" alt="Imagen de tarjeta" class="card-front">`; // Mostrar la imagen
 
     if (!firstCard) {
@@ -274,11 +274,11 @@ function handleCardClick(card) {
         // Si ya hay una carta seleccionada, almacena la segunda carta
         secondCard = card;
 
-        // Bloquea el tablero mientras se realiza la comparación
         lockBoard = true;
 
-        // Compara las dos cartas seleccionadas
         checkForMatch();
+
+        incrementMoves(); 
     }
 }
 
@@ -307,9 +307,8 @@ function checkForMatch() {
         setTimeout(() => {
             firstCard.classList.remove('flipped');
             secondCard.classList.remove('flipped');
-            firstCard.innerHTML = "❓"; 
-            secondCard.innerHTML = "❓"; 
-            incrementMoves(); 
+            firstCard.innerHTML = "?"; 
+            secondCard.innerHTML = "?"; 
             resetBoard();
         }, 1000);
     }
@@ -324,15 +323,13 @@ function checkIfGameFinished() {
         // Si todas las cartas están volteadas, finalizar el juego
         setTimeout(() => {
             endGame();
-        }, 500); // Breve retraso antes de finalizar el juego
+        }, 500);
     }
 }
 
 
 //funcion que termina el juego y muestra el resumen
 function endGame() {
-
-    
 
     const element = document.getElementById("main-content");
     element.style.display = "block";

@@ -27,6 +27,7 @@ Se ha creado el formulario y la vista del tablero junto con sus correspondientes
 - Revisar los tamaños de las diferentes cartas.
 
 
+
 ##SESION 2
 
 **Resumen**
@@ -47,6 +48,8 @@ Se ha añadido la opción de crear tableros personalizados controlando todas las
 **Ideas de mejora futura**
 - Posible uso de transicciones entre pantallas.
 - Mejorar el aleatorio y que sea aleatorio sin mostrar que tema es.
+
+
 
 ##SESIÓN 3
 
@@ -69,3 +72,26 @@ Se programa el volteo de cartas correctamente y la comparación de parejas, comp
 **Ideas de mejora futura**
 - Buscar la mejor manera de hacer las cosas a la primera para no tener que volver a trabajar sobre lo mismo.
 - mejorar el color verde
+
+
+
+##SESION 4
+
+**Resumen**
+Se ha programado el reloj para que funcione al realizar el primer click y solo si se selecciona la opción del temporizador. Se han cambiado los fondos, el css general (letras,botones,colores...). 
+
+**Dificultades encontradas**
+- Poner el temporizador solo cuando se activa la opción
+- Que el contador se actualice en la pantalla
+
+**Soluciones aplicadas**
+- ir actualizando el div para que aparezca
+
+**Fuentes consultadas**
+- https://developer.mozilla.org/es/docs/Web/JavaScript
+
+**Decisiones tecnicas**
+- Cambio de aspecto de la página buscando uno más desarrollado.
+
+**Ideas de mejora futura**
+- revisar el diseño
