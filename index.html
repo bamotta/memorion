@@ -9,7 +9,7 @@
 </head>
 <body>
     <div id="config-form">
-        <h1>Configuración del Juego</h1>
+        <h1 class="titulo">MEMORION</h1>
         <table>
             <tr>
                 <td><label for="username"><strong>Nombre de usuario:</strong></label></td>
@@ -21,7 +21,7 @@
             <tr>
                 <td><p><strong>Modo de juego:</strong></p></td>
                 <td>
-                    <label><input type="radio" name="game-mode" value="Normal"> Normal</label><br>
+                    <label><input type="radio" name="game-mode" value="Normal" checked> Normal</label><br>
                     <label><input type="radio" name="game-mode" value="Flash"> Flash</label>
                 </td>
             </tr>
@@ -34,6 +34,9 @@
                     <label><input type="radio" name="board-type" value="default" checked onclick="toggleBoardOptions()"> Predeterminado</label><br>
                     <label><input type="radio" name="board-type" value="custom" onclick="toggleBoardOptions()"> Personalizado</label>
                 </td>
+            </tr>
+            <tr>
+                <td colspan="2"><br></td>
             </tr>
             <tr id="default-options">
                 <td><p><strong>Nivel de juego:</strong></p></td>

@@ -11,6 +11,11 @@ var firstCard = null;
 var secondCard = null;
 var lockBoard = false;
 var movesCounter = 0
+var timerEnabled = false;
+var timerInterval;
+var secondsElapsed = 0;
+var timerStarted = false;
+
 
 //funcion que se encarga de gestionar la configuración del tablero.
 function submitConfiguration() {
@@ -93,7 +98,7 @@ function submitConfiguration() {
     element.innerHTML="";
 
     const elements = [
-        ["h1","Configuración completada"],
+        ["h1","CONFIGURACIÓN"],
         ["p", `Nombre de usuario: ${username}`],
         ["p", `Modo de juego: ${gameMode}`],
         ["p", `Tipo de tablero ${gameLevel}`],
@@ -140,6 +145,10 @@ function toggleBoardOptions() {
 
 //funcion para regresar a la pantalla principal
 function rel(){
+    clearInterval(timerInterval);
+    timerInterval = null;
+    timerStarted = false;
+    secondsElapsed = 0;
     location.reload();
 }
 
@@ -150,6 +159,8 @@ function startGame() {
         const themes = ["comida", "deportes", "banderas"];
         gameTheme = themes[Math.floor(Math.random() * themes.length)];
     }
+
+    movesCounter = 0;
 
     const element = document.getElementById("main-content");
     element.innerHTML="";
@@ -165,10 +176,13 @@ function startGame() {
         element.appendChild(ele);
     }
 
-    const timerDiv = document.createElement('div');
-    timerDiv.id = 'timer-container';
-    timerDiv.textContent = 'Tiempo: 0:00';
-    element.appendChild(timerDiv);
+    if (timerEnabled) {
+        const timerDiv = document.createElement('div');
+        timerDiv.id = 'timer-container';
+        timerDiv.textContent = 'Tiempo: 0:00';
+        element.appendChild(timerDiv);
+    }
+    resetTimer();
 
     const boardDiv = document.createElement('div');
     boardDiv.id = 'game-board';
@@ -180,7 +194,7 @@ function startGame() {
     element.appendChild(countDiv);
 
     const end = document.createElement("button");
-    end.textContent = "Finalizar Juego";
+    end.textContent = "FINALIZAR";
     end.addEventListener('click', endGame);
     element.appendChild(end);
 
@@ -195,7 +209,7 @@ function createGameBoard() {
     let totalCards = rows*cols;
 
      // Cargar imágenes según el tema seleccionado
-     const themePath = `images/${gameTheme}/`; // Ruta de la carpeta del tema
+     const themePath = `images/${gameTheme}/`;
      const availableImages = Array.from({ length: 18 }, (_, i) => `${themePath}image${i + 1}.png`);
  
      console.log("Rutas de imágenes disponibles:", availableImages);
@@ -219,7 +233,7 @@ function createGameBoard() {
                 const cardClass = gameTheme === "banderas" ? "card banderas" : "card"; // Añadir la clase 'banderas' si el tema es banderas
                 button.className = cardClass;
                 button.dataset.image = image;
-                button.textContent = "❓";
+                button.textContent = "?";
 
                 button.addEventListener('click', function() {
                     handleCardClick(this);
@@ -240,11 +254,17 @@ function createGameBoard() {
 
 //funcion para manejar lo que hace una carta al presionarla
 function handleCardClick(card) {
+
+    if(!timerStarted && timerEnabled){
+        startTimer();
+        timerStarted = true;
+    }
+
     if (lockBoard || card === firstCard || card.classList.contains('flipped')) {
         return; // Evita que se seleccionen más cartas o la misma carta dos veces
     }
 
-    card.classList.add('flipped'); // Voltea la carta
+    card.classList.add('flipped'); 
     card.innerHTML = `<img src="${card.getAttribute('data-image')}" alt="Imagen de tarjeta" class="card-front">`; // Mostrar la imagen
 
     if (!firstCard) {
@@ -254,11 +274,11 @@ function handleCardClick(card) {
         // Si ya hay una carta seleccionada, almacena la segunda carta
         secondCard = card;
 
-        // Bloquea el tablero mientras se realiza la comparación
         lockBoard = true;
 
-        // Compara las dos cartas seleccionadas
         checkForMatch();
+
+        incrementMoves(); 
     }
 }
 
@@ -271,26 +291,26 @@ function checkForMatch() {
         secondCard.classList.add('match');
 
         setTimeout(() => {
+
             firstCard.classList.remove('match');
             secondCard.classList.remove('match');
 
-            // Deshabilitar cartas después del efecto
             firstCard.disabled = true;
             secondCard.disabled = true;
 
             resetBoard();
             checkIfGameFinished();
         }, 800);
+
     } else {
         // Si no coinciden, las volteamos nuevamente después de un breve retraso
         setTimeout(() => {
             firstCard.classList.remove('flipped');
             secondCard.classList.remove('flipped');
-            firstCard.innerHTML = "❓"; // Restaurar el contenido original
-            secondCard.innerHTML = "❓"; // Restaurar el contenido original
-            incrementMoves(); // Incrementar el contador de movimientos
+            firstCard.innerHTML = "?"; 
+            secondCard.innerHTML = "?"; 
             resetBoard();
-        }, 1000); // 1 segundo de retraso para que el jugador vea las cartas
+        }, 1000);
     }
 }
 
@@ -303,7 +323,7 @@ function checkIfGameFinished() {
         // Si todas las cartas están volteadas, finalizar el juego
         setTimeout(() => {
             endGame();
-        }, 500); // Breve retraso antes de finalizar el juego
+        }, 500);
     }
 }
 
@@ -316,15 +336,20 @@ function endGame() {
     element.innerHTML="";
 
     const elements = [
-        ["h1","Resumen del Juego"],
-        ["p", `Nombre de usuario: ${username}`],
-        ["p", `Modo de juego: ${gameMode}`],
-        ["p", `Tipo de tablero ${gameLevel}`],
-        ["p", `Tema: ${gameTheme}`],
-        ["p", `Temporizador: ${timerEnabled ? "Activado" : "Desactivado"}`],
+        ["h1","Juego terminado"],
+        ["h2",` ${username}`],
         ["p", `Movimientos realizados: ${movesCounter}`],
-        ["p", "¡Gracias por jugar!"]
     ]
+
+    if(timerEnabled){
+        const minutes =Math.floor(secondsElapsed / 60);
+        const seconds = secondsElapsed % 60;
+        const formattedTime = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        elements.push(["p", `Tiempo total: ${formattedTime}`]);
+        stopTimer(); 
+    }
+
+    elements.push(["p", "¡Gracias por jugar!"]);
 
     for(const [tag, text] of elements){
         const ele = document.createElement(tag);
@@ -332,6 +357,7 @@ function endGame() {
         element.appendChild(ele);
     }
 
+   
     const rest = document.createElement("button");
 
     rest.textContent = "Volver";
@@ -355,4 +381,38 @@ function resetBoard() {
     lockBoard = false;
 }
 
+//funcion que inicia el reloj
+function startTimer() {
+    if(timerStarted) return;
+
+    timerInterval = setInterval(() => {
+        secondsElapsed++;
+        const minutes = Math.floor(secondsElapsed / 60);
+        const seconds = secondsElapsed % 60;
+        const formattedTime = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        const timerDiv = document.getElementById('timer-container');
+        if (timerDiv) {
+            timerDiv.textContent = `Tiempo: ${formattedTime}`;
+        }
+    }, 1000);
+
+    timerStarted = true;
+
+}
+
+//funcion que para el reloj
+function stopTimer() {
+    clearInterval(timerInterval);
+}
+
+//funcion que resetea el reloj
+function resetTimer() {
+    stopTimer();
+    secondsElapsed = 0;
+    timerStarted = false;
+    const timerDiv = document.getElementById('timer-container');
+    if (timerDiv) {
+        timerDiv.textContent = 'Tiempo: 0:00';
+    }
+}
 
