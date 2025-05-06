@@ -92,8 +92,9 @@ button:hover {
     line-height: calc(50vmin / 6 - 5px); 
     cursor: pointer;
     position: relative;
-    transition: transform 0.3s ease;
+    transition: transform 0.5s ease;
     overflow: hidden;
+    transform-style:preserve-3d;
 }
 
 .card img {
@@ -126,9 +127,27 @@ button:hover {
 }
 
 .card.match {
-    background-color: #28a745 !important;
-    transition: background-color 0.3s ease;
-  }  
+    animation: fadeGreen 1s ease;  
+}
+
+#timer-container, #moves-counter{
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #FF7F50;
+}
+
+#moves-counter{
+    margin-bottom: 10px;;
+}
+
+@keyframes fadeGreen {
+    0% {
+        background-color: rgba(40, 167, 69, 0.7);
+    }
+    100% {
+        background-color: #f2eeee;
+    }
+    }
 
 @keyframes pulsar {
     from{

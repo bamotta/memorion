@@ -11,6 +11,11 @@ var firstCard = null;
 var secondCard = null;
 var lockBoard = false;
 var movesCounter = 0
+var timerEnabled = false;
+var timerInterval;
+var secondsElapsed = 0;
+var timerStarted = false;
+
 
 //funcion que se encarga de gestionar la configuración del tablero.
 function submitConfiguration() {
@@ -140,6 +145,10 @@ function toggleBoardOptions() {
 
 //funcion para regresar a la pantalla principal
 function rel(){
+    clearInterval(timerInterval);
+    timerInterval = null;
+    timerStarted = false;
+    secondsElapsed = 0;
     location.reload();
 }
 
@@ -150,6 +159,8 @@ function startGame() {
         const themes = ["comida", "deportes", "banderas"];
         gameTheme = themes[Math.floor(Math.random() * themes.length)];
     }
+
+    movesCounter = 0;
 
     const element = document.getElementById("main-content");
     element.innerHTML="";
@@ -165,10 +176,13 @@ function startGame() {
         element.appendChild(ele);
     }
 
-    const timerDiv = document.createElement('div');
-    timerDiv.id = 'timer-container';
-    timerDiv.textContent = 'Tiempo: 0:00';
-    element.appendChild(timerDiv);
+    if (timerEnabled) {
+        const timerDiv = document.createElement('div');
+        timerDiv.id = 'timer-container';
+        timerDiv.textContent = 'Tiempo: 0:00';
+        element.appendChild(timerDiv);
+    }
+    resetTimer();
 
     const boardDiv = document.createElement('div');
     boardDiv.id = 'game-board';
@@ -240,6 +254,12 @@ function createGameBoard() {
 
 //funcion para manejar lo que hace una carta al presionarla
 function handleCardClick(card) {
+
+    if(!timerStarted && timerEnabled){
+        startTimer();
+        timerStarted = true;
+    }
+
     if (lockBoard || card === firstCard || card.classList.contains('flipped')) {
         return; // Evita que se seleccionen más cartas o la misma carta dos veces
     }
@@ -271,26 +291,27 @@ function checkForMatch() {
         secondCard.classList.add('match');
 
         setTimeout(() => {
+
             firstCard.classList.remove('match');
             secondCard.classList.remove('match');
 
-            // Deshabilitar cartas después del efecto
             firstCard.disabled = true;
             secondCard.disabled = true;
 
             resetBoard();
             checkIfGameFinished();
         }, 800);
+
     } else {
         // Si no coinciden, las volteamos nuevamente después de un breve retraso
         setTimeout(() => {
             firstCard.classList.remove('flipped');
             secondCard.classList.remove('flipped');
-            firstCard.innerHTML = "❓"; // Restaurar el contenido original
-            secondCard.innerHTML = "❓"; // Restaurar el contenido original
-            incrementMoves(); // Incrementar el contador de movimientos
+            firstCard.innerHTML = "❓"; 
+            secondCard.innerHTML = "❓"; 
+            incrementMoves(); 
             resetBoard();
-        }, 1000); // 1 segundo de retraso para que el jugador vea las cartas
+        }, 1000);
     }
 }
 
@@ -311,6 +332,10 @@ function checkIfGameFinished() {
 //funcion que termina el juego y muestra el resumen
 function endGame() {
 
+    if(timerEnabled){
+        stopTimer();
+    }
+
     const element = document.getElementById("main-content");
     element.style.display = "block";
     element.innerHTML="";
@@ -323,7 +348,6 @@ function endGame() {
         ["p", `Tema: ${gameTheme}`],
         ["p", `Temporizador: ${timerEnabled ? "Activado" : "Desactivado"}`],
         ["p", `Movimientos realizados: ${movesCounter}`],
-        ["p", "¡Gracias por jugar!"]
     ]
 
     for(const [tag, text] of elements){
@@ -331,6 +355,15 @@ function endGame() {
         ele.textContent = text;
         element.appendChild(ele);
     }
+
+    if(timerEnabled){
+        const minutes =Math.floor(secondsElapsed / 60);
+        const seconds = secondsElapsed % 60;
+        const formattedTime = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        elements.push(["p", `Tiempo total: ${formattedTime}`]);
+    }
+
+    elements.push(["p", "¡Gracias por jugar!"]);
 
     const rest = document.createElement("button");
 
@@ -355,4 +388,38 @@ function resetBoard() {
     lockBoard = false;
 }
 
+//funcion que inicia el reloj
+function startTimer() {
+    if(timerStarted) return;
+
+    timerInterval = setInterval(() => {
+        secondsElapsed++;
+        const minutes = Math.floor(secondsElapsed / 60);
+        const seconds = secondsElapsed % 60;
+        const formattedTime = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        const timerDiv = document.getElementById('timer-container');
+        if (timerDiv) {
+            timerDiv.textContent = `Tiempo: ${formattedTime}`;
+        }
+    }, 1000);
+
+    timerStarted = true;
+
+}
+
+//funcion que para el reloj
+function stopTimer() {
+    clearInterval(timerInterval);
+}
+
+//funcion que resetea el reloj
+function resetTimer() {
+    stopTimer();
+    secondsElapsed = 0;
+    timerStarted = false;
+    const timerDiv = document.getElementById('timer-container');
+    if (timerDiv) {
+        timerDiv.textContent = 'Tiempo: 0:00';
+    }
+}
 
