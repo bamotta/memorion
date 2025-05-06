@@ -1,10 +1,9 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #FFDAB9; 
     margin: 0;
     padding: 0;
     display: flex;
-    background-color: #E6F7FF; 
+    background-image: url(images/fondo.png); 
     justify-content: center;
     align-items: center;
     height: 100vh;
@@ -13,6 +12,11 @@ body {
 h1 {
     color: #FF7F50; 
     text-align: center;
+}
+
+h1.titulo{
+    font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-size: 4em;
 }
 
 h1.principal{
