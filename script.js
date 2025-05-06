@@ -10,12 +10,12 @@ var customCols = 0;
 var firstCard = null;
 var secondCard = null;
 var lockBoard = false;
-var movesCounter = 0
+var movesCounter = 0;
 var timerEnabled = false;
 var timerInterval;
 var secondsElapsed = 0;
 var timerStarted = false;
-
+var isFlashMode = false; // Indica si el modo Flash está activo
 
 //funcion que se encarga de gestionar la configuración del tablero.
 function submitConfiguration() {
@@ -98,7 +98,7 @@ function submitConfiguration() {
     element.innerHTML="";
 
     const elements = [
-        ["h1","Configuración completada"],
+        ["h1","CONFIGURACIÓN"],
         ["p", `Nombre de usuario: ${username}`],
         ["p", `Modo de juego: ${gameMode}`],
         ["p", `Tipo de tablero ${gameLevel}`],
@@ -154,7 +154,6 @@ function rel(){
 
 //muestra la pantalla de juego 
 function startGame() {
-    //aleatorio
     if (gameTheme === 'aleatorio') {
         const themes = ["comida", "deportes", "banderas"];
         gameTheme = themes[Math.floor(Math.random() * themes.length)];
@@ -163,14 +162,14 @@ function startGame() {
     movesCounter = 0;
 
     const element = document.getElementById("main-content");
-    element.innerHTML="";
+    element.innerHTML = "";
 
     const elements = [
-        ["h1",`Bienvenido, ${username}`],
+        ["h1", `Bienvenido, ${username}`],
         ["h2", "¡Juego en progreso!"],
-    ]
+    ];
 
-    for(const [tag, text] of elements){
+    for (const [tag, text] of elements) {
         const ele = document.createElement(tag);
         ele.textContent = text;
         element.appendChild(ele);
@@ -194,11 +193,14 @@ function startGame() {
     element.appendChild(countDiv);
 
     const end = document.createElement("button");
-    end.textContent = "Finalizar Juego";
+    end.textContent = "Finalizar" ;
     end.addEventListener('click', endGame);
     element.appendChild(end);
 
-    createGameBoard(); 
+    // Activar modo Flash si corresponde
+    isFlashMode = gameMode === "Flash";
+
+    createGameBoard();
 }
 
 //crea el tablero con las opciones que hemos recogido anteriormente
@@ -206,79 +208,92 @@ function createGameBoard() {
     const gameBoard = document.getElementById("game-board");
     gameBoard.innerHTML = "";
 
-    let totalCards = rows*cols;
+    let totalCards = rows * cols;
 
-     // Cargar imágenes según el tema seleccionado
-     const themePath = `images/${gameTheme}/`; // Ruta de la carpeta del tema
-     const availableImages = Array.from({ length: 18 }, (_, i) => `${themePath}image${i + 1}.png`);
- 
-     console.log("Rutas de imágenes disponibles:", availableImages);
- 
-     // Seleccionar imágenes necesarias y duplicarlas para formar pares
-     const selectedImages = availableImages.slice(0, totalCards / 2);
-     const cardImages = [...selectedImages, ...selectedImages]; // Duplicar imágenes
-     const shuffledImages = cardImages.sort(() => Math.random() - 0.5); // Mezclar imágenes
- 
+    const themePath = `images/${gameTheme}/`;
+    const availableImages = Array.from({ length: 18 }, (_, i) => `${themePath}image${i + 1}.png`);
+
+    const selectedImages = availableImages.slice(0, totalCards / 2);
+    const cardImages = [...selectedImages, ...selectedImages];
+    const shuffledImages = cardImages.sort(() => Math.random() - 0.5);
 
     const table = document.createElement("table");
 
     for (let i = 0; i < rows; i++) {
         const tr = document.createElement("tr");
 
-            for (let j = 0; j < cols; j++) {
-                const td = document.createElement("td")
-                const image = shuffledImages.pop(); // Obtener una imagen aleatoria
+        for (let j = 0; j < cols; j++) {
+            const td = document.createElement("td");
+            const image = shuffledImages.pop();
 
-                const button = document.createElement("button");
-                const cardClass = gameTheme === "banderas" ? "card banderas" : "card"; // Añadir la clase 'banderas' si el tema es banderas
-                button.className = cardClass;
-                button.dataset.image = image;
-                button.textContent = "❓";
+            const button = document.createElement("button");
+const cardClass = gameTheme === "banderas" ? "card banderas" : "card"; // Añadir la clase 'banderas' si el tema es banderas
+            button.className = cardClass;
+            button.dataset.image = image;
+            button.textContent = "?";
 
-                button.addEventListener('click', function() {
-                    handleCardClick(this);
-                });
+            button.addEventListener("click", function () {
+                handleCardClick(this);
+            });
 
-                td.appendChild(button);
-                tr.appendChild(td);
-
+            td.appendChild(button);
+            tr.appendChild(td);
         }
 
         table.appendChild(tr);
-
     }
 
     gameBoard.appendChild(table);
 
+    // Mostrar todas las cartas durante 5 segundos si es modo Flash
+    if (isFlashMode) {
+        const allCards = document.querySelectorAll(".card");
+        allCards.forEach(card => {
+            card.classList.add("flipped");
+            card.innerHTML = `<img src="${card.dataset.image}" alt="Imagen de tarjeta" class="card-front">`;
+        });
+
+        setTimeout(() => {
+            allCards.forEach(card => {
+                card.classList.remove("flipped");
+                card.innerHTML = "?";
+            });
+        }, 5000); // 5 segundos
+    }
 }
 
 //funcion para manejar lo que hace una carta al presionarla
 function handleCardClick(card) {
-
-    if(!timerStarted && timerEnabled){
+    if (!timerStarted && timerEnabled) {
         startTimer();
         timerStarted = true;
     }
 
-    if (lockBoard || card === firstCard || card.classList.contains('flipped')) {
+    if (lockBoard || card === firstCard || card.classList.contains("flipped")) {
         return; // Evita que se seleccionen más cartas o la misma carta dos veces
     }
 
-    card.classList.add('flipped'); // Voltea la carta
-    card.innerHTML = `<img src="${card.getAttribute('data-image')}" alt="Imagen de tarjeta" class="card-front">`; // Mostrar la imagen
-
     if (!firstCard) {
-        // Si no hay una carta seleccionada, almacena la primera carta
         firstCard = card;
+        if (!isFlashMode) {
+            // En modo normal, girar la carta inmediatamente
+            card.classList.add("flipped");
+            card.innerHTML = `<img src="${card.getAttribute("data-image")}" alt="Imagen de tarjeta" class="card-front">`;
+        }
     } else {
-        // Si ya hay una carta seleccionada, almacena la segunda carta
         secondCard = card;
-
-        // Bloquea el tablero mientras se realiza la comparación
         lockBoard = true;
+        incrementMoves(); 
 
-        // Compara las dos cartas seleccionadas
-        checkForMatch();
+        if (isFlashMode) {
+            // En modo Flash, verificar si coinciden antes de girarlas
+            checkForMatchFlashMode();
+        } else {
+            // En modo normal, girar la carta inmediatamente y verificar
+            card.classList.add("flipped");
+            card.innerHTML = `<img src="${card.getAttribute("data-image")}" alt="Imagen de tarjeta" class="card-front">`;
+            checkForMatch();
+        }
     }
 }
 
@@ -307,11 +322,38 @@ function checkForMatch() {
         setTimeout(() => {
             firstCard.classList.remove('flipped');
             secondCard.classList.remove('flipped');
-            firstCard.innerHTML = "❓"; 
-            secondCard.innerHTML = "❓"; 
-            incrementMoves(); 
+            firstCard.innerHTML = "?"; 
+            secondCard.innerHTML = "?"; 
             resetBoard();
         }, 1000);
+    }
+}
+
+//funcion que comprueba si dos cartas son iguales en modo Flash
+function checkForMatchFlashMode() {
+    const isMatch = firstCard.getAttribute("data-image") === secondCard.getAttribute("data-image");
+
+    if (isMatch) {
+        // Si las cartas coinciden, girarlas y deshabilitarlas
+        firstCard.classList.add("flipped");
+        secondCard.classList.add("flipped");
+        firstCard.innerHTML = `<img src="${firstCard.getAttribute("data-image")}" alt="Imagen de tarjeta" class="card-front">`;
+        secondCard.innerHTML = `<img src="${secondCard.getAttribute("data-image")}" alt="Imagen de tarjeta" class="card-front">`;
+
+        firstCard.disabled = true;
+        secondCard.disabled = true;
+        resetBoard();
+        checkIfGameFinished();
+    } else {
+        // Indicar visualmente el fallo sin girarlas
+        firstCard.classList.add("error");
+        secondCard.classList.add("error");
+
+        setTimeout(() => {
+            firstCard.classList.remove("error");
+            secondCard.classList.remove("error");
+            resetBoard();
+        }, 1000); // 1 segundo de retraso para mostrar el error
     }
 }
 
