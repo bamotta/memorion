@@ -192,11 +192,7 @@ function startGame() {
     countDiv.textContent = 'Movimientos: 0';
     element.appendChild(countDiv);
 
-    const end = document.createElement("button");
-    end.textContent = "Finalizar" ;
-    end.addEventListener('click', endGame);
-    element.appendChild(end);
-
+   
     // Activar modo Flash si corresponde
     isFlashMode = gameMode === "Flash";
 
@@ -370,48 +366,157 @@ function checkIfGameFinished() {
     }
 }
 
+// Función para guardar los datos de la partida en localStorage
+function saveGameResult(username, gameMode, gameLevel, moves, time) {
+    const gameResults = JSON.parse(localStorage.getItem('gameResults')) || [];
+    gameResults.push({ username, gameMode, gameLevel, moves, time });
+    localStorage.setItem('gameResults', JSON.stringify(gameResults));
+}
+
+// Función para mostrar los rankings en una pantalla separada
+function showRankings() {
+    const gameResults = JSON.parse(localStorage.getItem('gameResults')) || [];
+    if (gameResults.length === 0) {
+        alert("No hay partidas registradas.");
+        return;
+    }
+
+    // Crear la pantalla de rankings
+    const rankingsDiv = document.createElement('div');
+    rankingsDiv.id = 'rankings-container';
+    
+    const title = document.createElement('h2');
+    title.textContent = "Rankings";
+    rankingsDiv.appendChild(title);
+
+    const buttonsDiv = document.createElement("div");
+    buttonsDiv.id = "rankings-buttons";
+
+    const movesButton = document.createElement('button');
+    movesButton.textContent = "Ordenar por Movimientos";
+    movesButton.id = "sort-moves";
+
+    const timeButton = document.createElement('button');
+    timeButton.textContent = "Ordenar por Tiempo";
+    timeButton.id = "sort-time";
+
+    const modeButton = document.createElement('button');
+    modeButton.textContent = "Ordenar por Modo";
+    modeButton.id = "sort-mode";
+
+    buttonsDiv.append(movesButton, timeButton, modeButton);
+
+    const table = document.createElement('table');
+    table.id = 'rankings-table';
+
+    const thead = document.createElement('thead');
+    const headerRow = document.createElement('tr');
+
+    ["Usuario", "Modo", "Nivel", "Movimientos", "Tiempo"].forEach(text => {
+        const th = document.createElement("th");
+        th.textContent = text;
+        headerRow.appendChild(th);
+    });
+    thead.appendChild(headerRow);
+
+    const tbody = document.createElement("tbody");
+
+    table.append(thead, tbody);
+
+    const closeButton = document.createElement('button');
+    closeButton.textContent = "Cerrar";
+    closeButton.id = "close-rankings";
+
+    rankingsDiv.append(title, buttonsDiv, table, closeButton);
+
+    document.body.appendChild(rankingsDiv);
+
+    // Función para actualizar la tabla según el criterio seleccionado
+    function updateRankingsTable(sortBy) {
+        if (sortBy === "movimientos") {
+            gameResults.sort((a, b) => a.moves - b.moves || a.time - b.time && a.gameLevel.localeCompare(b.gameLevel));
+        } else if (sortBy === "tiempo") {
+            gameResults.sort((a, b) => a.time - b.time || a.moves - b.moves && a.gameLevel.localeCompare(b.gameLevel));
+        } else if (sortBy === "modo") {
+            gameResults.sort((a, b) => a.gameMode.localeCompare(b.gameMode) || a.moves - b.moves || a.time - b.time && a.gameLevel.localeCompare(b.gameLevel));
+        }
+
+
+        const tbody = rankingsDiv.querySelector('#rankings-table tbody');
+        tbody.innerHTML = gameResults.map(result => `
+            <tr>
+                <td>${result.username}</td>
+                <td>${result.gameMode}</td>
+                <td>${result.gameLevel}</td>
+                <td>${result.moves}</td>
+                <td>${formatTime(result.time)}</td>
+            </tr>
+        `).join('');
+    }
+
+    // Inicializar la tabla con un criterio por defecto
+    updateRankingsTable("movimientos");
+
+    // Añadir eventos a los botones
+    document.getElementById('sort-moves').addEventListener('click', () => updateRankingsTable("movimientos"));
+    document.getElementById('sort-time').addEventListener('click', () => updateRankingsTable("tiempo"));
+    document.getElementById('sort-mode').addEventListener('click', () => updateRankingsTable("modo"));
+
+    // Cerrar el ranking
+    document.getElementById('close-rankings').addEventListener('click', () => {
+        rankingsDiv.remove();
+    });
+}
+
+// Función para formatear el tiempo en minutos y segundos
+function formatTime(seconds) {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+}
 
 //funcion que termina el juego y muestra el resumen
 function endGame() {
-
-    
-
     const element = document.getElementById("main-content");
     element.style.display = "block";
-    element.innerHTML="";
+    element.innerHTML = "";
 
     const elements = [
-        ["h1","Juego terminado"],
-        ["h2",` ${username}`],
+        ["h1", "Juego terminado"],
+        ["h2", ` ${username}`],
         ["p", `Movimientos realizados: ${movesCounter}`],
-    ]
+    ];
 
-    if(timerEnabled){
-        const minutes =Math.floor(secondsElapsed / 60);
+    if (timerEnabled) {
+        const minutes = Math.floor(secondsElapsed / 60);
         const seconds = secondsElapsed % 60;
         const formattedTime = `${minutes}:${seconds.toString().padStart(2, '0')}`;
         elements.push(["p", `Tiempo total: ${formattedTime}`]);
-        stopTimer(); 
+        stopTimer();
     }
 
     elements.push(["p", "¡Gracias por jugar!"]);
 
-    for(const [tag, text] of elements){
+    for (const [tag, text] of elements) {
         const ele = document.createElement(tag);
         ele.textContent = text;
         element.appendChild(ele);
     }
 
-   
+    // Guardar los resultados de la partida
+    saveGameResult(username, gameMode, gameLevel, movesCounter, secondsElapsed);
+
+    // Botón para volver
     const rest = document.createElement("button");
-
     rest.textContent = "Volver";
-
     rest.addEventListener('click', rel);
-
     element.appendChild(rest);
 
-
+    // Botón para ver rankings
+    const rankingsButton = document.createElement("button");
+    rankingsButton.textContent = "Ver Rankings";
+    rankingsButton.addEventListener('click', showRankings);
+    element.appendChild(rankingsButton);
 }
 
 //funcion que incrementa los movimientos
