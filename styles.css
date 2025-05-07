@@ -1,20 +1,21 @@
-@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap'); 
 
 body {
     font-family: 'Press Start 2P', cursive;
     margin: 0;
     padding: 0;
     display: flex;
-    background-image: url(images/fondo.png); 
+    background-image: url(images/fondo.jpg); 
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh;
+    height: auto;
 }
 
 h1 {
-    font-family: 'Press Start 2P', cursive;
     color: #FF7F50; 
     text-align: center;
+    margin-top: auto;
 }
 
 h1.titulo{
@@ -25,9 +26,7 @@ h1.principal{
     margin-top: 300px;
 }
 
-
 table {
-    margin: 20px auto;
     border-collapse: collapse;
 }
 
@@ -35,14 +34,22 @@ td {
     padding: 10px;
 }
 
+#timer{
+    transform: scale(1.5);
+}
 
 input[type="text"], select {
+    font-family: 'Press Start 2P', cursive;
     width: 100%;
     padding: 5px;
-    margin: 5px 0;
+    margin: 5px 0px;
     border: 1px solid #ccc;
     border-radius: 4px;
-    font-family: 'Press Start 2P', cursive;
+}
+
+input[type=radio]{
+    transform: scale(1.2);
+    margin: 7px;
 }
 
 button {
@@ -60,7 +67,7 @@ button {
 }
 
 button:hover {
-    background-color: #fa963d;
+    background-color: #FF6347; 
 }
 
 #main-content, #summary {
@@ -74,7 +81,8 @@ button:hover {
     flex-direction: column; 
     align-items: center; 
     gap: 10px; 
-    min-height: 100vh; 
+    min-height: 100vh; /*ocupa toda la pantalla*/
+    height: auto; /*para que no se vaya el titulo hacia arriba cuando el tablero es grande*/
     justify-content: space-between; 
     padding: 20px; 
     box-sizing: border-box; 
@@ -91,7 +99,7 @@ button:hover {
 .card {
     width: 120px; 
     height: 100px;
-    color:steelblue;
+    color: steelblue;
     border: 1px solid #ccc;
     background-color: #f2eeee;
     font-size: 2rem; 
@@ -99,10 +107,14 @@ button:hover {
     line-height: calc(50vmin / 6 - 5px); 
     cursor: pointer;
     position: relative;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.401); /* sombra suave */
     transition: transform 0.5s ease;
     overflow: hidden;
     transform-style:preserve-3d;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.401);
+}
+
+.card:hover{
+    background-color: #fa936d; 
 }
 
 .card img {
@@ -148,6 +160,31 @@ button:hover {
     margin-bottom: 10px;;
 }
 
+#rankings-container{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start; /*el contenido empieza desde arriba (para el scroll)*/
+    z-index: 1000;
+}
+
+#rankings-table{
+    margin: 20px;
+    text-align: center;
+}
+
+#tr-table-rankings,#th-table-rankings{
+    padding: 40px;
+}
+
 @keyframes fadeGreen {
     0% {
         background-color: rgba(40, 167, 69, 0.7);
@@ -164,28 +201,3 @@ button:hover {
         opacity: 100;
     }
 }
-
-#timer {
- transform: scale(1.5);
-}
-
-input[type="radio"] {
-    transform: scale(1.2);
-    margin: 7px;
-}
-
-#rankings-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.8);
-    color: white;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-}
-
