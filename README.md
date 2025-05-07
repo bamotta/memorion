@@ -95,3 +95,29 @@ Se ha programado el reloj para que funcione al realizar el primer click y solo s
 
 **Ideas de mejora futura**
 - revisar el diseño
+
+
+
+
+##SESION 5
+
+**Resumen**
+Se ha programado el ranking para que aparezca en la pantalla del resumen final con todas las partidas jugadas y poder ordenarlas segun diferentes criterios. Se ha añadido un tema nuevo.
+
+**Dificultades encontradas**
+-Uso del localStorage
+
+**Soluciones aplicadas**
+- Buscar información
+
+**Fuentes consultadas**
+- https://developer.mozilla.org/es/docs/Web/API/Window/localStorage
+- https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Global_Objects/Array/map
+- https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Global_Objects/Array/join
+
+**Decisiones tecnicas**
+-Se ha añadido un tema nuevo más acorde a la estética adquirida.
+-Se decide crear los rakings de esta manera porque se cree que es en la que mejor queda.
+
+**Ideas de mejora futura**
+-posible cambio de temas acordes a la estetica adquirida.

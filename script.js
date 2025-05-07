@@ -16,7 +16,6 @@ var timerInterval;
 var secondsElapsed = 0;
 var timerStarted = false;
 
-
 //funcion que se encarga de gestionar la configuración del tablero.
 function submitConfiguration() {
     const usernameInput = document.getElementById("username").value.trim();
@@ -156,7 +155,7 @@ function rel(){
 function startGame() {
     //aleatorio
     if (gameTheme === 'aleatorio') {
-        const themes = ["comida", "deportes", "banderas"];
+        const themes = ["comida", "deportes", "banderas", "scooby-doo"];
         gameTheme = themes[Math.floor(Math.random() * themes.length)];
     }
 
@@ -192,11 +191,6 @@ function startGame() {
     countDiv.id = 'moves-counter';
     countDiv.textContent = 'Movimientos: 0';
     element.appendChild(countDiv);
-
-    const end = document.createElement("button");
-    end.textContent = "FINALIZAR";
-    end.addEventListener('click', endGame);
-    element.appendChild(end);
 
     createGameBoard(); 
 }
@@ -331,6 +325,8 @@ function checkIfGameFinished() {
 //funcion que termina el juego y muestra el resumen
 function endGame() {
 
+    saveGameResult(username, gameMode, gameLevel, movesCounter, secondsElapsed);
+
     const element = document.getElementById("main-content");
     element.style.display = "block";
     element.innerHTML="";
@@ -358,14 +354,17 @@ function endGame() {
     }
 
    
-    const rest = document.createElement("button");
-
+    const rest = document.createElement('button');
     rest.textContent = "Volver";
-
     rest.addEventListener('click', rel);
 
     element.appendChild(rest);
 
+    const rank = document.createElement('button');
+    rank.textContent = "Ranking";
+    rank.addEventListener('click', showRankings);
+
+    element.appendChild(rank);
 
 }
 
@@ -416,3 +415,116 @@ function resetTimer() {
     }
 }
 
+//funcion para dar formato al tiempo
+function formatTime(seconds) {
+    const minutes = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${minutes}:${secs.toString().padStart(2, '0')}`;
+}
+
+// Función para guardar los datos de la partida en localStorage
+function saveGameResult(username, gameMode, gameLevel, moves, time) {
+    const gameResults = JSON.parse(localStorage.getItem('gameResults')) || [];
+    gameResults.push({ username, gameMode, gameLevel, moves, time });
+    localStorage.setItem('gameResults', JSON.stringify(gameResults));
+}
+
+//funcion para manejar los rankings
+function showRankings() {
+    const gameResults = JSON.parse(localStorage.getItem('gameResults')) || [];
+    if (gameResults.length === 0) {
+        alert("No hay partidas registradas.");
+        return;
+    }
+
+    // Crear la pantalla de rankings
+    const rankingsDiv = document.createElement('div');
+    rankingsDiv.id = 'rankings-container';
+    
+    const title = document.createElement('h2');
+    title.textContent = "Rankings";
+    rankingsDiv.appendChild(title);
+
+    const buttonsDiv = document.createElement("div");
+    buttonsDiv.id = "rankings-buttons";
+
+    const movesButton = document.createElement('button');
+    movesButton.textContent = "Ordenar por Movimientos";
+    movesButton.id = "sort-moves";
+
+    const timeButton = document.createElement('button');
+    timeButton.textContent = "Ordenar por Tiempo";
+    timeButton.id = "sort-time";
+
+    const modeButton = document.createElement('button');
+    modeButton.textContent = "Ordenar por Modo";
+    modeButton.id = "sort-mode";
+
+    buttonsDiv.append(movesButton, timeButton, modeButton);
+
+    const table = document.createElement('table');
+    table.id = 'rankings-table';
+
+    const thead = document.createElement('thead');
+    const headerRow = document.createElement('tr');
+
+    ["Usuario", "Modo", "Nivel", "Movimientos", "Tiempo"].forEach(text => {
+        const th = document.createElement("th");
+        th.textContent = text;
+        headerRow.appendChild(th);
+        th.id = 'th-table-rankings';
+    });
+    thead.appendChild(headerRow);
+
+    const tbody = document.createElement("tbody");
+
+    table.append(thead, tbody);
+
+    const closeButton = document.createElement('button');
+    closeButton.textContent = "Cerrar";
+    closeButton.id = "close-rankings";
+
+    rankingsDiv.append(title, buttonsDiv, table, closeButton);
+
+    document.body.appendChild(rankingsDiv);
+
+    // Función para actualizar la tabla según el criterio seleccionado
+    function updateRankingsTable(sortBy) {
+        if (sortBy === "movimientos") {
+            gameResults.sort((a, b) => a.moves - b.moves || a.time - b.time && a.gameLevel.localeCompare(b.gameLevel));
+        } else if (sortBy === "tiempo") {
+            gameResults.sort((a, b) => {
+                // Colocar partidas sin tiempo al final
+                if (a.time === 0) return 1;
+                if (b.time === 0) return -1;
+                return a.time - b.time || a.moves - b.moves;
+            });
+        } else if (sortBy === "modo") {
+            gameResults.sort((a, b) => a.gameMode.localeCompare(b.gameMode) || a.moves - b.moves || a.time - b.time && a.gameLevel.localeCompare(b.gameLevel));
+        }
+
+        const tbody = rankingsDiv.querySelector('#rankings-table tbody');
+        tbody.innerHTML = gameResults.map(result => `
+            <tr  id="tr-table-rankings">
+                <td>${result.username}</td>
+                <td>${result.gameMode}</td>
+                <td>${result.gameLevel}</td>
+                <td>${result.moves}</td>
+                <td>${result.time === 0 ? "" : formatTime(result.time)}</td>
+            </tr>
+        `).join('');
+    }
+
+    // Inicializar la tabla con un criterio por defecto
+    updateRankingsTable("movimientos");
+
+    // Añadir eventos a los botones
+    document.getElementById('sort-moves').addEventListener('click', () => updateRankingsTable("movimientos"));
+    document.getElementById('sort-time').addEventListener('click', () => updateRankingsTable("tiempo"));
+    document.getElementById('sort-mode').addEventListener('click', () => updateRankingsTable("modo"));
+
+    // Cerrar el ranking
+    document.getElementById('close-rankings').addEventListener('click', () => {
+        rankingsDiv.remove();
+    });
+}
