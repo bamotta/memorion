@@ -449,15 +449,15 @@ function showRankings() {
     buttonsDiv.id = "rankings-buttons";
 
     const movesButton = document.createElement('button');
-    movesButton.textContent = "Movimientos";
+    movesButton.textContent = "Ordenar por Movimientos";
     movesButton.id = "sort-moves";
 
     const timeButton = document.createElement('button');
-    timeButton.textContent = "Tiempo";
+    timeButton.textContent = "Ordenar por Tiempo";
     timeButton.id = "sort-time";
 
     const modeButton = document.createElement('button');
-    modeButton.textContent = "Modo";
+    modeButton.textContent = "Ordenar por Modo";
     modeButton.id = "sort-mode";
 
     buttonsDiv.append(movesButton, timeButton, modeButton);
@@ -472,7 +472,7 @@ function showRankings() {
         const th = document.createElement("th");
         th.textContent = text;
         headerRow.appendChild(th);
-        th.id = "th-table-rankings";
+        th.id = 'th-table-rankings';
     });
     thead.appendChild(headerRow);
 
@@ -493,20 +493,24 @@ function showRankings() {
         if (sortBy === "movimientos") {
             gameResults.sort((a, b) => a.moves - b.moves || a.time - b.time && a.gameLevel.localeCompare(b.gameLevel));
         } else if (sortBy === "tiempo") {
-            gameResults.sort((a, b) => a.time - b.time || a.moves - b.moves && a.gameLevel.localeCompare(b.gameLevel));
+            gameResults.sort((a, b) => {
+                // Colocar partidas sin tiempo al final
+                if (a.time === 0) return 1;
+                if (b.time === 0) return -1;
+                return a.time - b.time || a.moves - b.moves;
+            });
         } else if (sortBy === "modo") {
             gameResults.sort((a, b) => a.gameMode.localeCompare(b.gameMode) || a.moves - b.moves || a.time - b.time && a.gameLevel.localeCompare(b.gameLevel));
         }
 
-
         const tbody = rankingsDiv.querySelector('#rankings-table tbody');
         tbody.innerHTML = gameResults.map(result => `
-            <tr id="tr-table-rankings">
+            <tr  id="tr-table-rankings">
                 <td>${result.username}</td>
                 <td>${result.gameMode}</td>
                 <td>${result.gameLevel}</td>
                 <td>${result.moves}</td>
-                <td>${formatTime(result.time)}</td>
+                <td>${result.time === 0 ? "" : formatTime(result.time)}</td>
             </tr>
         `).join('');
     }
