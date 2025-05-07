@@ -108,6 +108,7 @@ button:hover {
     transition: transform 0.5s ease;
     overflow: hidden;
     transform-style:preserve-3d;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.401);
 }
 
 .card:hover{
@@ -155,6 +156,21 @@ button:hover {
 
 #moves-counter{
     margin-bottom: 10px;;
+}
+
+#rankings-container{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
 }
 
 @keyframes fadeGreen {

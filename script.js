@@ -10,7 +10,309 @@ var customCols = 0;
 var firstCard = null;
 var secondCard = null;
 var lockBoard = false;
-var movesCounter = 0
+var movesCounter = 0;//funcion que se encarga de gestionar la configuración del tablero.
+function submitConfiguration() {
+    const usernameInput = document.getElementById("username").value.trim();
+    const modeInput = document.querySelector('input[name="game-mode"]:checked');
+    const boardTypeInput = document.querySelector('input[name="board-type"]:checked');   
+    const themeInput = document.getElementById("game-theme").value;
+    const timerInput = document.getElementById("timer").checked;
+
+    // Check if all options are selected
+    if (!usernameInput || !modeInput || !boardTypeInput || !themeInput) {
+        alert("Por favor, completa todas las opciones.");
+        return;
+    }
+
+    // Assign values to variables
+    username = usernameInput;
+    gameMode = modeInput.value;
+    gameTheme = themeInput;
+    timerEnabled = timerInput;
+    boardType = boardTypeInput.value;
+
+    // Check if the board is preselected or custom
+    if (boardTypeInput.value === "default") {
+        const levelInput = document.querySelector('input[name="game-level"]:checked');
+        if (!levelInput) {
+            alert("Por favor, selecciona un nivel de juego.");
+            return;
+        }
+        gameLevel = levelInput.value;
+
+        switch (gameLevel) {
+            case "Fácil":
+                rows = 4;
+                cols = 4;
+                break;
+            case "Medio":
+                rows = 4;
+                cols = 5;
+                break;
+            case "Difícil":
+                rows = 6;
+                cols = 6;
+                break;
+            default:
+                alert("Nivel de juego no válido");
+                return;
+        }
+
+    } else if (boardTypeInput.value === "custom") {
+        rows = parseInt(document.getElementById("rows").value);
+        cols = parseInt(document.getElementById("cols").value);
+        const totalCards = rows * cols;
+
+        if (isNaN(rows) || isNaN(cols) || rows <= 0 || cols <= 0) {
+            alert("Por favor, introduce valores válidos para las filas y columnas.");
+            return;
+        }
+
+        if (rows > 6 || cols > 6) {
+            alert("El número de filas y columnas no puede ser mayor que 6.");
+            return;
+        }
+
+        if (totalCards % 2 !== 0 || totalCards > 36) {
+            alert("El número total de casillas debe ser par y menor o igual a 36.");
+            return;
+        }
+
+        customRows = rows; 
+        customCols = cols;
+        gameLevel = `Personalizado (${rows}x${cols})`;
+    }
+
+    // Remove the configuration form
+    document.getElementById("config-form").remove();
+
+    // Create a new element to display the game configuration
+    const element = document.getElementById("main-content");
+    element.style.display = "block";
+    element.innerHTML="";
+
+    // Create elements to display the game configuration
+    const elements = [
+        ["h1","CONFIGURACIÓN"],
+        ["p", `Nombre de usuario: ${username}`],
+        ["p", `Modo de juego: ${gameMode}`],
+        ["p", `Tipo de tablero ${gameLevel}`],
+        ["p", `Tema: ${gameTheme}`],
+        ["p", `Temporizador: ${timerEnabled ? "Activado" : "Desactivado"}`],
+    ]
+
+    // Append the elements to the main content
+    for(const [tag, text] of elements){
+        const ele = document.createElement(tag);
+        ele.textContent = text;
+        element.appendChild(ele);
+    }
+
+    // Create start and return buttons
+    const start = document.createElement("button");
+    const ret = document.createElement("button");
+
+    start.textContent = "Iniciar Juego";
+    ret.textContent = "Volver";
+
+    start.addEventListener('click', startGame);
+    ret.addEventListener('click', rel);
+
+    // Append the buttons to the main content
+    element.appendChild(start);
+    element.appendChild(ret);
+}
+
+// Function to toggle board options
+function toggleBoardOptions() {
+    boardType = document.querySelector('input[name="board-type"]:checked').value;
+    const defaultOptions = document.getElementById("default-options");
+    const customOptions = document.getElementById("custom-options");
+    const customOptionsCols = document.getElementById("custom-options-cols");
+
+    if (boardType === "default") {
+        defaultOptions.style.display = "table-row";
+        customOptions.style.display = "none";
+        customOptionsCols.style.display = "none";
+    } else {
+        defaultOptions.style.display = "none";
+        customOptions.style.display = "table-row";
+        customOptionsCols.style.display = "table-row";
+    }
+}
+
+// Function to return to the main screen
+function rel(){
+    clearInterval(timerInterval);
+    timerInterval = null;
+    timerStarted = false;
+    secondsElapsed = 0;
+    location.reload();
+}
+
+// Function to start the game
+function startGame() {
+    // Random theme
+    if (gameTheme === 'aleatorio') {
+        const themes = ["comida", "deportes", "banderas"];
+        gameTheme = themes[Math.floor(Math.random() * themes.length)];
+    }
+
+    movesCounter = 0;
+
+    const element = document.getElementById("main-content");
+    element.innerHTML="";
+
+    const elements = [
+        ["h1",`Bienvenido, ${username}`],
+        ["h2", "¡Juego en progreso!"],
+    ]
+
+    for(const [tag, text] of elements){
+        const ele = document.createElement(tag);
+        ele.textContent = text;
+        element.appendChild(ele);
+    }
+
+    if (timerEnabled) {
+        const timerDiv = document.createElement('div');
+        timerDiv.id = 'timer-container';
+        timerDiv.textContent = 'Tiempo: 0:00';
+        element.appendChild(timerDiv);
+    }
+    resetTimer();
+
+    const boardDiv = document.createElement('div');
+    boardDiv.id = 'game-board';
+    element.appendChild(boardDiv);
+
+    const countDiv = document.createElement('div');
+    countDiv.id = 'moves-counter';
+    countDiv.textContent = 'Movimientos: 0';
+    element.appendChild(countDiv);
+
+    createGameBoard(); 
+}
+
+// Function to create the game board
+function createGameBoard() {
+    const gameBoard = document.getElementById("game-board");
+    gameBoard.innerHTML = "";
+
+    let totalCards = rows*cols;
+
+    // Load images based on the selected theme
+    const themePath = `images/${gameTheme}/`;
+    const availableImages = Array.from({ length: 18 }, (_, i) => `${themePath}image${i + 1}.png`);
+ 
+    console.log("Available image paths:", availableImages);
+ 
+    // Select images and duplicate them to form pairs
+    const selectedImages = availableImages.slice(0, totalCards / 2);
+    const cardImages = [...selectedImages, ...selectedImages]; // Duplicate images
+    const shuffledImages = cardImages.sort(() => Math.random() - 0.5); // Shuffle images
+ 
+
+    const table = document.createElement("table");
+
+    for (let i = 0; i < rows; i++) {
+        const tr = document.createElement("tr");
+
+            for (let j = 0; j < cols; j++) {
+                const td = document.createElement("td")
+                const image = shuffledImages.pop(); // Get a random image
+
+                const button = document.createElement("button");
+                const cardClass = gameTheme === "banderas" ? "card banderas" : "card"; // Add the 'banderas' class if the theme is 'banderas'
+                button.className = cardClass;
+                button.dataset.image = image;
+                button.textContent = "?";
+
+                button.addEventListener('click', function() {
+                    handleCardClick(this);
+                });
+
+                td.appendChild(button);
+                tr.appendChild(td);
+
+        }
+
+        table.appendChild(tr);
+
+    }
+
+    gameBoard.appendChild(table);
+
+}
+
+// Function to handle card clicks
+function handleCardClick(card) {
+
+    if(!timerStarted && timerEnabled){
+        startTimer();
+        timerStarted = true;
+    }
+
+    if (lockBoard || card === firstCard || card.classList.contains('flipped')) {
+        return; // Prevent selecting more cards or the same card twice
+    }
+
+    card.classList.add('flipped'); 
+    card.innerHTML = `<img src="${card.getAttribute('data-image')}" alt="Imagen de tarjeta" class="card-front">`; // Show the image
+
+    if (!firstCard) {
+        // If no card is selected, store the first card
+        firstCard = card;
+    } else {
+        // If a card is selected, store the second card
+        secondCard = card;
+
+        lockBoard = true;
+
+        checkForMatch();
+
+        incrementMoves(); 
+    }
+}
+
+// Function to check for matches
+function checkForMatch() {
+    const isMatch = firstCard.getAttribute('data-image') === secondCard.getAttribute('data-image');
+
+    if (isMatch) {
+        firstCard.classList.add('match');
+        secondCard.classList.add('match');
+
+        setTimeout(() => {
+
+            firstCard.classList.remove('match');
+            secondCard.classList.remove('match');
+
+            firstCard.disabled = true;
+            secondCard.disabled = true;
+
+            resetBoard();
+            checkIfGameFinished();
+        }, 800);
+
+    } else {
+        // If no match, flip the cards back after a brief delay
+        setTimeout(() => {
+            firstCard.classList.remove('flipped');
+            secondCard.classList.remove('flipped');
+            firstCard.innerHTML = "?"; 
+            secondCard.innerHTML = "?"; 
+            resetBoard();
+        }, 1000);
+    }
+}
+
+// Function to check if the game is finished
+function checkIfGameFinished() {
+    const allCards = document.querySelectorAll('.card');
+    const allFlipped = Array.from(allCards).every(card => card.classList.contains('flipped'));
+
+    if (all
 var timerEnabled = false;
 var timerInterval;
 var secondsElapsed = 0;
@@ -193,11 +495,6 @@ function startGame() {
     countDiv.textContent = 'Movimientos: 0';
     element.appendChild(countDiv);
 
-    const end = document.createElement("button");
-    end.textContent = "FINALIZAR";
-    end.addEventListener('click', endGame);
-    element.appendChild(end);
-
     createGameBoard(); 
 }
 
@@ -331,6 +628,8 @@ function checkIfGameFinished() {
 //funcion que termina el juego y muestra el resumen
 function endGame() {
 
+    saveGameResult(username, gameMode, gameLevel, movesCounter, secondsElapsed);
+
     const element = document.getElementById("main-content");
     element.style.display = "block";
     element.innerHTML="";
@@ -358,14 +657,17 @@ function endGame() {
     }
 
    
-    const rest = document.createElement("button");
-
+    const rest = document.createElement('button');
     rest.textContent = "Volver";
-
     rest.addEventListener('click', rel);
 
     element.appendChild(rest);
 
+    const rank = document.createElement('button');
+    rank.textContent = "Ranking";
+    rank.addEventListener('click', showRankings);
+
+    element.appendChild(rank);
 
 }
 
@@ -416,3 +718,111 @@ function resetTimer() {
     }
 }
 
+//funcion para dar formato al tiempo
+function formatTime(seconds) {
+    const minutes = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${minutes}:${secs.toString().padStart(2, '0')}`;
+}
+
+// Función para guardar los datos de la partida en localStorage
+function saveGameResult(username, gameMode, gameLevel, moves, time) {
+    const gameResults = JSON.parse(localStorage.getItem('gameResults')) || [];
+    gameResults.push({ username, gameMode, gameLevel, moves, time });
+    localStorage.setItem('gameResults', JSON.stringify(gameResults));
+}
+
+//funcion para manejar los rankings
+function showRankings() {
+    const gameResults = JSON.parse(localStorage.getItem('gameResults')) || [];
+    if (gameResults.length === 0) {
+        alert("No hay partidas registradas.");
+        return;
+    }
+
+    // Crear la pantalla de rankings
+    const rankingsDiv = document.createElement('div');
+    rankingsDiv.id = 'rankings-container';
+    
+    const title = document.createElement('h2');
+    title.textContent = "Rankings";
+    rankingsDiv.appendChild(title);
+
+    const buttonsDiv = document.createElement("div");
+    buttonsDiv.id = "rankings-buttons";
+
+    const movesButton = document.createElement('button');
+    movesButton.textContent = "Ordenar por Movimientos";
+    movesButton.id = "sort-moves";
+
+    const timeButton = document.createElement('button');
+    timeButton.textContent = "Ordenar por Tiempo";
+    timeButton.id = "sort-time";
+
+    const modeButton = document.createElement('button');
+    modeButton.textContent = "Ordenar por Modo";
+    modeButton.id = "sort-mode";
+
+    buttonsDiv.append(movesButton, timeButton, modeButton);
+
+    const table = document.createElement('table');
+    table.id = 'rankings-table';
+
+    const thead = document.createElement('thead');
+    const headerRow = document.createElement('tr');
+
+    ["Usuario", "Modo", "Nivel", "Movimientos", "Tiempo"].forEach(text => {
+        const th = document.createElement("th");
+        th.textContent = text;
+        headerRow.appendChild(th);
+    });
+    thead.appendChild(headerRow);
+
+    const tbody = document.createElement("tbody");
+
+    table.append(thead, tbody);
+
+    const closeButton = document.createElement('button');
+    closeButton.textContent = "Cerrar";
+    closeButton.id = "close-rankings";
+
+    rankingsDiv.append(title, buttonsDiv, table, closeButton);
+
+    document.body.appendChild(rankingsDiv);
+
+    // Función para actualizar la tabla según el criterio seleccionado
+    function updateRankingsTable(sortBy) {
+        if (sortBy === "movimientos") {
+            gameResults.sort((a, b) => a.moves - b.moves || a.time - b.time && a.gameLevel.localeCompare(b.gameLevel));
+        } else if (sortBy === "tiempo") {
+            gameResults.sort((a, b) => a.time - b.time || a.moves - b.moves && a.gameLevel.localeCompare(b.gameLevel));
+        } else if (sortBy === "modo") {
+            gameResults.sort((a, b) => a.gameMode.localeCompare(b.gameMode) || a.moves - b.moves || a.time - b.time && a.gameLevel.localeCompare(b.gameLevel));
+        }
+
+
+        const tbody = rankingsDiv.querySelector('#rankings-table tbody');
+        tbody.innerHTML = gameResults.map(result => `
+            <tr>
+                <td>${result.username}</td>
+                <td>${result.gameMode}</td>
+                <td>${result.gameLevel}</td>
+                <td>${result.moves}</td>
+                <td>${formatTime(result.time)}</td>
+            </tr>
+        `).join('');
+    }
+
+    // Inicializar la tabla con un criterio por defecto
+    updateRankingsTable("movimientos");
+
+    // Añadir eventos a los botones
+    document.getElementById('sort-moves').addEventListener('click', () => updateRankingsTable("movimientos"));
+    document.getElementById('sort-time').addEventListener('click', () => updateRankingsTable("tiempo"));
+    document.getElementById('sort-mode').addEventListener('click', () => updateRankingsTable("modo"));
+
+    // Cerrar el ranking
+    document.getElementById('close-rankings').addEventListener('click', () => {
+        rankingsDiv.remove();
+    });
+}
