@@ -15,6 +15,7 @@ var timerEnabled = false;
 var timerInterval;
 var secondsElapsed = 0;
 var timerStarted = false;
+var isFlashMode = false;
 
 //funcion que se encarga de gestionar la configuración del tablero.
 function submitConfiguration() {
@@ -192,6 +193,9 @@ function startGame() {
     countDiv.textContent = 'Movimientos: 0';
     element.appendChild(countDiv);
 
+    //Activar modo Flash
+    isFlashMode = gameMode ==="Flash";
+
     createGameBoard(); 
 }
 
@@ -264,15 +268,29 @@ function handleCardClick(card) {
     if (!firstCard) {
         // Si no hay una carta seleccionada, almacena la primera carta
         firstCard = card;
+
+        // En modo normal, girar la carta inmediatamente y verificar
+        if(!isFlashMode){
+            card.classList.add("flipped");
+            card.innerHTML = `<img src="${card.getAttribute("data-image")}" alt="Imagen de tarjeta" class="card-front">`;
+        }
+
     } else {
         // Si ya hay una carta seleccionada, almacena la segunda carta
         secondCard = card;
-
         lockBoard = true;
-
         checkForMatch();
-
         incrementMoves(); 
+
+        if (isFlashMode) {
+            // En modo Flash, verificar si coinciden antes de girarlas
+            checkForMatchFlashMode();
+        } else {
+            // En modo normal, girar la carta inmediatamente y verificar
+            card.classList.add("flipped");
+            card.innerHTML = `<img src="${card.getAttribute("data-image")}" alt="Imagen de tarjeta" class="card-front">`;
+            checkForMatch();
+        }
     }
 }
 
@@ -305,6 +323,34 @@ function checkForMatch() {
             secondCard.innerHTML = "?"; 
             resetBoard();
         }, 1000);
+    }
+}
+
+//funcion que comprueba si dos cartas son iguales en modo Flash
+function checkForMatchFlashMode() {
+    const isMatch = firstCard.getAttribute("data-image") === secondCard.getAttribute("data-image");
+
+    if (isMatch) {
+        // Si las cartas coinciden, girarlas y deshabilitarlas
+        firstCard.classList.add("flipped");
+        secondCard.classList.add("flipped");
+        firstCard.innerHTML = `<img src="${firstCard.getAttribute("data-image")}" alt="Imagen de tarjeta" class="card-front">`;
+        secondCard.innerHTML = `<img src="${secondCard.getAttribute("data-image")}" alt="Imagen de tarjeta" class="card-front">`;
+
+        firstCard.disabled = true;
+        secondCard.disabled = true;
+        resetBoard();
+        checkIfGameFinished();
+    } else {
+        // Indicar visualmente el fallo sin girarlas
+        firstCard.classList.add("error");
+        secondCard.classList.add("error");
+
+        setTimeout(() => {
+            firstCard.classList.remove("error");
+            secondCard.classList.remove("error");
+            resetBoard();
+        }, 1000); // 1 segundo de retraso para mostrar el error
     }
 }
 
