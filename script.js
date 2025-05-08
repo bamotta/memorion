@@ -633,7 +633,7 @@ function shareOnFacebook(username, gameLevel, moves, time){
     const formattedTime = time > 0 ? formatTime(time) : "sin temporizador";
     const shareText = `¡${username} completó el nivel ${gameLevel} con ${moves} movimientos en ${formattedTime}! ¿Puedes superarlo?`;
 
-    const shareUrl = encodeURIComponent("https://ejemplo.com"); //en caso de no ser un localhost se pondría la url
+    const shareUrl = encodeURIComponent("https://memorion.com"); //en caso de no ser un localhost se pondría la url
     const quote = encodeURIComponent(shareText);
 
     const facebookUrl = `https://www.facebook.com/sharer.php?u=${shareUrl}&quote=${quote}`;
