@@ -194,7 +194,7 @@ function startGame() {
     element.appendChild(countDiv);
 
     //Activar modo Flash
-    isFlashMode = gameMode ==="Flash";
+    isFlashMode = gameMode === "Flash";
 
     createGameBoard(); 
 }
@@ -247,6 +247,22 @@ function createGameBoard() {
     }
 
     gameBoard.appendChild(table);
+    
+    //mostrar todas las cartas durante 5s
+    if (isFlashMode) {
+        const allCards = document.querySelectorAll(".card");
+        allCards.forEach(card => {
+            card.classList.add("flipped");
+            card.innerHTML = `<img src="${card.dataset.image}" alt="Imagen de tarjeta" class="card-front">`;
+        });
+
+        setTimeout(() => {
+            allCards.forEach(card => {
+                card.classList.remove("flipped");
+                card.innerHTML = "?";
+            });
+        }, 5000); // 5 segundos
+    }
 
 }
 
@@ -262,12 +278,12 @@ function handleCardClick(card) {
         return; // Evita que se seleccionen más cartas o la misma carta dos veces
     }
 
-    card.classList.add('flipped'); 
-    card.innerHTML = `<img src="${card.getAttribute('data-image')}" alt="Imagen de tarjeta" class="card-front">`; // Mostrar la imagen
-
     if (!firstCard) {
         // Si no hay una carta seleccionada, almacena la primera carta
         firstCard = card;
+
+        //Para que quede en naraja y ver cual he seleccionado.
+        if (isFlashMode) card.classList.add("selected");
 
         // En modo normal, girar la carta inmediatamente y verificar
         if(!isFlashMode){
@@ -283,6 +299,7 @@ function handleCardClick(card) {
         incrementMoves(); 
 
         if (isFlashMode) {
+            card.classList.add("selected");
             // En modo Flash, verificar si coinciden antes de girarlas
             checkForMatchFlashMode();
         } else {
@@ -301,6 +318,12 @@ function checkForMatch() {
     if (isMatch) {
         firstCard.classList.add('match');
         secondCard.classList.add('match');
+
+        const aciertoSound = document.getElementById("acierto-sound");
+        if (aciertoSound) {
+            aciertoSound.currentTime = 0;
+            aciertoSound.play();
+        }
 
         setTimeout(() => {
 
@@ -334,6 +357,15 @@ function checkForMatchFlashMode() {
         // Si las cartas coinciden, girarlas y deshabilitarlas
         firstCard.classList.add("flipped");
         secondCard.classList.add("flipped");
+        firstCard.classList.remove("selected");
+        secondCard.classList.remove("selected");
+
+        const aciertoSound = document.getElementById("acierto-sound");
+        if (aciertoSound) {
+            aciertoSound.currentTime = 0; // Reinicia el sonido si ya se había reproducido
+            aciertoSound.play();
+        }
+
         firstCard.innerHTML = `<img src="${firstCard.getAttribute("data-image")}" alt="Imagen de tarjeta" class="card-front">`;
         secondCard.innerHTML = `<img src="${secondCard.getAttribute("data-image")}" alt="Imagen de tarjeta" class="card-front">`;
 
@@ -342,13 +374,25 @@ function checkForMatchFlashMode() {
         resetBoard();
         checkIfGameFinished();
     } else {
-        // Indicar visualmente el fallo sin girarlas
+        // Eliminar clase 'error' primero si ya estaba
+        firstCard.classList.remove("error");
+        secondCard.classList.remove("error");
+
+        // Forzar reflow para reiniciar la animación
+        void firstCard.offsetWidth;
+        void secondCard.offsetWidth;
+
+        // Agregar clase 'error' para disparar animación
         firstCard.classList.add("error");
         secondCard.classList.add("error");
+
+        firstCard.classList.remove("selected");
+        secondCard.classList.remove("selected");
 
         setTimeout(() => {
             firstCard.classList.remove("error");
             secondCard.classList.remove("error");
+
             resetBoard();
         }, 1000); // 1 segundo de retraso para mostrar el error
     }
@@ -405,6 +449,14 @@ function endGame() {
     rest.addEventListener('click', rel);
 
     element.appendChild(rest);
+
+    const share = document.createElement('button');
+    share.textContent = "Compartir en Facebook";
+    share.addEventListener('click', () =>{
+        shareOnFacebook(username, gameLevel, movesCounter, secondsElapsed);
+    });
+
+    element.appendChild(share);
 
     const rank = document.createElement('button');
     rank.textContent = "Ranking";
@@ -573,4 +625,18 @@ function showRankings() {
     document.getElementById('close-rankings').addEventListener('click', () => {
         rankingsDiv.remove();
     });
+}
+
+//funcion para compartir en Facebook
+function shareOnFacebook(username, gameLevel, moves, time){
+
+    const formattedTime = time > 0 ? formatTime(time) : "sin temporizador";
+    const shareText = `¡${username} completó el nivel ${gameLevel} con ${moves} movimientos en ${formattedTime}! ¿Puedes superarlo?`;
+
+    const shareUrl = encodeURIComponent("https://ejemplo.com"); //en caso de no ser un localhost se pondría la url
+    const quote = encodeURIComponent(shareText);
+
+    const facebookUrl = `https://www.facebook.com/sharer.php?u=${shareUrl}&quote=${quote}`;
+
+    window.open(facebookUrl, '_blank', 'width=600', 'heigth=400');
 }

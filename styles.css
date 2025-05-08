@@ -149,6 +149,14 @@ button:hover {
     animation: fadeGreen 1s ease;  
 }
 
+.card.error{
+    animation: shake 0.4s ease;
+}
+
+.card.selected {
+    background-color: #fa936d !important;
+}
+
 #timer-container, #moves-counter{
     font-size: 1.5rem;
     font-weight: bold;
@@ -200,3 +208,10 @@ button:hover {
         opacity: 100;
     }
 }
+@keyframes shake {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    50% { transform: translateX(5px); }
+    75% { transform: translateX(-5px); }
+    100% { transform: translateX(0); }
+  }
