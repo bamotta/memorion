@@ -15,6 +15,7 @@ var timerEnabled = false;
 var timerInterval;
 var secondsElapsed = 0;
 var timerStarted = false;
+var isFlashMode = false;
 
 //funcion que se encarga de gestionar la configuración del tablero.
 function submitConfiguration() {
@@ -192,6 +193,9 @@ function startGame() {
     countDiv.textContent = 'Movimientos: 0';
     element.appendChild(countDiv);
 
+    //Activar modo Flash
+    isFlashMode = gameMode === "Flash";
+
     createGameBoard(); 
 }
 
@@ -243,6 +247,22 @@ function createGameBoard() {
     }
 
     gameBoard.appendChild(table);
+    
+    //mostrar todas las cartas durante 5s
+    if (isFlashMode) {
+        const allCards = document.querySelectorAll(".card");
+        allCards.forEach(card => {
+            card.classList.add("flipped");
+            card.innerHTML = `<img src="${card.dataset.image}" alt="Imagen de tarjeta" class="card-front">`;
+        });
+
+        setTimeout(() => {
+            allCards.forEach(card => {
+                card.classList.remove("flipped");
+                card.innerHTML = "?";
+            });
+        }, 5000); // 5 segundos
+    }
 
 }
 
@@ -258,21 +278,36 @@ function handleCardClick(card) {
         return; // Evita que se seleccionen más cartas o la misma carta dos veces
     }
 
-    card.classList.add('flipped'); 
-    card.innerHTML = `<img src="${card.getAttribute('data-image')}" alt="Imagen de tarjeta" class="card-front">`; // Mostrar la imagen
-
     if (!firstCard) {
         // Si no hay una carta seleccionada, almacena la primera carta
         firstCard = card;
+
+        //Para que quede en naraja y ver cual he seleccionado.
+        if (isFlashMode) card.classList.add("selected");
+
+        // En modo normal, girar la carta inmediatamente y verificar
+        if(!isFlashMode){
+            card.classList.add("flipped");
+            card.innerHTML = `<img src="${card.getAttribute("data-image")}" alt="Imagen de tarjeta" class="card-front">`;
+        }
+
     } else {
         // Si ya hay una carta seleccionada, almacena la segunda carta
         secondCard = card;
-
         lockBoard = true;
-
         checkForMatch();
-
         incrementMoves(); 
+
+        if (isFlashMode) {
+            card.classList.add("selected");
+            // En modo Flash, verificar si coinciden antes de girarlas
+            checkForMatchFlashMode();
+        } else {
+            // En modo normal, girar la carta inmediatamente y verificar
+            card.classList.add("flipped");
+            card.innerHTML = `<img src="${card.getAttribute("data-image")}" alt="Imagen de tarjeta" class="card-front">`;
+            checkForMatch();
+        }
     }
 }
 
@@ -283,6 +318,12 @@ function checkForMatch() {
     if (isMatch) {
         firstCard.classList.add('match');
         secondCard.classList.add('match');
+
+        const aciertoSound = document.getElementById("acierto-sound");
+        if (aciertoSound) {
+            aciertoSound.currentTime = 0;
+            aciertoSound.play();
+        }
 
         setTimeout(() => {
 
@@ -305,6 +346,55 @@ function checkForMatch() {
             secondCard.innerHTML = "?"; 
             resetBoard();
         }, 1000);
+    }
+}
+
+//funcion que comprueba si dos cartas son iguales en modo Flash
+function checkForMatchFlashMode() {
+    const isMatch = firstCard.getAttribute("data-image") === secondCard.getAttribute("data-image");
+
+    if (isMatch) {
+        // Si las cartas coinciden, girarlas y deshabilitarlas
+        firstCard.classList.add("flipped");
+        secondCard.classList.add("flipped");
+        firstCard.classList.remove("selected");
+        secondCard.classList.remove("selected");
+
+        const aciertoSound = document.getElementById("acierto-sound");
+        if (aciertoSound) {
+            aciertoSound.currentTime = 0; // Reinicia el sonido si ya se había reproducido
+            aciertoSound.play();
+        }
+
+        firstCard.innerHTML = `<img src="${firstCard.getAttribute("data-image")}" alt="Imagen de tarjeta" class="card-front">`;
+        secondCard.innerHTML = `<img src="${secondCard.getAttribute("data-image")}" alt="Imagen de tarjeta" class="card-front">`;
+
+        firstCard.disabled = true;
+        secondCard.disabled = true;
+        resetBoard();
+        checkIfGameFinished();
+    } else {
+        // Eliminar clase 'error' primero si ya estaba
+        firstCard.classList.remove("error");
+        secondCard.classList.remove("error");
+
+        // Forzar reflow para reiniciar la animación
+        void firstCard.offsetWidth;
+        void secondCard.offsetWidth;
+
+        // Agregar clase 'error' para disparar animación
+        firstCard.classList.add("error");
+        secondCard.classList.add("error");
+
+        firstCard.classList.remove("selected");
+        secondCard.classList.remove("selected");
+
+        setTimeout(() => {
+            firstCard.classList.remove("error");
+            secondCard.classList.remove("error");
+
+            resetBoard();
+        }, 1000); // 1 segundo de retraso para mostrar el error
     }
 }
 
@@ -359,6 +449,14 @@ function endGame() {
     rest.addEventListener('click', rel);
 
     element.appendChild(rest);
+
+    const share = document.createElement('button');
+    share.textContent = "Compartir en Facebook";
+    share.addEventListener('click', () =>{
+        shareOnFacebook(username, gameLevel, movesCounter, secondsElapsed);
+    });
+
+    element.appendChild(share);
 
     const rank = document.createElement('button');
     rank.textContent = "Ranking";
@@ -484,9 +582,22 @@ function showRankings() {
     closeButton.textContent = "Cerrar";
     closeButton.id = "close-rankings";
 
-    rankingsDiv.append(title, buttonsDiv, table, closeButton);
+    const clearButton = document.createElement('button');
+    clearButton.textContent = "Limpiar Ranking";
+    clearButton.id = "clear-rankings";
+
+
+    rankingsDiv.append(title, buttonsDiv, table, closeButton, clearButton);
 
     document.body.appendChild(rankingsDiv);
+
+    clearButton.addEventListener('click', () => {
+        if (confirm("¿Estás seguro de que deseas eliminar todos los rankings?")) {
+            localStorage.removeItem('gameResults');
+            rankingsDiv.remove(); // Cierra la ventana de rankings
+            alert("Ranking eliminado.");
+        }
+    });
 
     // Función para actualizar la tabla según el criterio seleccionado
     function updateRankingsTable(sortBy) {
@@ -528,3 +639,42 @@ function showRankings() {
         rankingsDiv.remove();
     });
 }
+
+//funcion para compartir en Facebook
+function shareOnFacebook(username, gameLevel, moves, time) {
+    const timeFormatted = formatTime(time);
+    let shareText = `He jugado al juego de memoria (${gameLevel}) con ${moves} movimientos`;
+
+    if (timerEnabled) {
+        const timeFormatted = formatTime(time);
+        shareText += ` en ${timeFormatted}`;
+    }
+
+    shareText += `. ¿Puedes superarme?`;
+    const urlToShare = "https://bamotta.github.io/memorion/";
+
+    navigator.clipboard.writeText(shareText).then(() => {
+        alert("Texto copiado al portapapeles. Pégalo en tu publicación de Facebook.");
+        window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(urlToShare)}&quote=${encodeURIComponent(shareText)}`, "_blank")
+    });
+}
+
+// Función para mostrar el easter egg
+function showEasterEgg() {
+    const title = document.getElementById("memorion-title");
+    title.style.transition = "transform 0.5s";
+    title.style.transform = "rotateY(360deg)";
+
+    setTimeout(() => {
+        alert("¿QUÉ LE DIJO UNA CARTA A SU PAREJA? \n¡Por fin te encuentro! Pensé que ibas a seguir dandome la espalda toda la vida.");
+        title.style.transform = "none"; // Restablecer la rotación
+    }, 500); // Mostrar el mensaje después de la animación
+}
+
+// Añadir el evento al título
+document.addEventListener("DOMContentLoaded", () => {
+    const title = document.getElementById("memorion-title");
+    if (title) {
+        title.addEventListener("click", showEasterEgg);
+    }
+});
