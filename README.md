@@ -121,3 +121,26 @@ Se ha programado el ranking para que aparezca en la pantalla del resumen final c
 
 **Ideas de mejora futura**
 -posible cambio de temas acordes a la estetica adquirida.
+
+
+
+##SESION 6
+
+**Resumen**
+Se han añadido efectos de sonido y nuevos efectos en las cartas. Organizado el código. Se ha terminado de cambiar los temas. Se ha añadido la opción de publicar el resultado de la partida en Facebook. Se ha mejorado la implementación del ranking, pudiendo vaciarlo. Se ha insertado el **huevo de pascua**. Al pulsar en el titulo girará y mostrara un chiste sobre cartas y parejas.
+
+**Dificultades encontradas**
+- Localizar de manera correcta los lugares donde añadir los efectos a las cartas para que ocurran en los momentos adecuados.
+- Implementar la opción de compartir en Facebook.
+
+**Soluciones aplicadas**
+- Busqueda de información
+
+**Fuentes consultadas**
+- https://www.lostiemposcambian.com/blog/facebook/compartir-urls-en-facebook/comment-page-3/
+- https://developer.mozilla.org/en-US/docs/Web/API/Clipboard/writeText
+
+**Decisiones tecnicas**
+- Se acaban de modificar los temas para que lleven una estetica similar a la del juego.
+- Se decide poner este huevo de pascua por darle un punto más cómico al juego.
+- Se decide poner el botón de vaciar el ranking porque cuando llevas varias partidas jugadas es dificil aclararse, asi se le da la oportunidad al usuario de mantener todos los registros o poder ir borrando si no quiere guardarlos todos.
