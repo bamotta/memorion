@@ -630,7 +630,14 @@ function showRankings() {
 //funcion para compartir en Facebook
 function shareOnFacebook(username, gameLevel, moves, time) {
     const timeFormatted = formatTime(time);
-    const shareText = `He jugado MEMORION (${gameLevel}) con ${moves} movimientos en ${timeFormatted}. ¿Puedes superarme?`;
+    let shareText = `He jugado al juego de memoria (${gameLevel}) con ${moves} movimientos`;
+
+    if (timerEnabled) {
+        const timeFormatted = formatTime(time);
+        shareText += ` en ${timeFormatted}`;
+    }
+
+    shareText += `. ¿Puedes superarme?`;
     const urlToShare = "https://bamotta.github.io/memorion/";
 
     navigator.clipboard.writeText(shareText).then(() => {
