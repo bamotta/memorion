@@ -20,6 +20,7 @@ h1 {
 
 #memorion-title{
     font-size: 4em;
+    cursor: pointer;
 }
 
 h1.principal{
