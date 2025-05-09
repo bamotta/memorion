@@ -640,3 +640,23 @@ function shareOnFacebook(username, gameLevel, moves, time){
 
     window.open(facebookUrl, '_blank', 'width=600', 'heigth=400');
 }
+
+// Función para mostrar el easter egg
+function showEasterEgg() {
+    const title = document.getElementById("memorion-title");
+    title.style.transition = "transform 0.5s";
+    title.style.transform = "rotateY(360deg)";
+
+    setTimeout(() => {
+        alert("Escribid lo que queráis");
+        title.style.transform = "none"; // Restablecer la rotación
+    }, 500); // Mostrar el mensaje después de la animación
+}
+
+// Añadir el evento al título
+document.addEventListener("DOMContentLoaded", () => {
+    const title = document.getElementById("memorion-title");
+    if (title) {
+        title.addEventListener("click", showEasterEgg);
+    }
+});
