@@ -6,12 +6,12 @@
 Se ha creado el formulario y la vista del tablero junto con sus correspondientes archivos CSS. Sin funcionalidades.
 
 **Dificultades encontradas**
-- dificultad para encontrar la manera correcta de crear el tablero.
-- darse cuenta se puede realizar todo en un solo documento HTML modificando los divs.
+- Dificultad para encontrar la manera correcta de crear el tablero.
+- Darse cuenta se puede realizar todo en un solo documento HTML modificando los divs.
 
 **Soluciones aplicadas**
-- buscar información acerca de ello.
-- prestar atención al ejemplo de clase de las tarjetas y ver que se podia modificar objetos vacios. Buscar información para saber vaciar los divs desde el archivo JS.
+- Buscar información acerca de ello.
+- Prestar atención al ejemplo de clase de las tarjetas y ver que se podia modificar objetos vacios. Buscar información para saber vaciar los divs desde el archivo JS.
 
 **Fuentes Consultadas**
 - https://support.microsoft.com/es-es/topic/onclick-propiedad-9fc822dd-a32c-404e-aa1f-9b83b098948f
@@ -34,10 +34,10 @@ Se ha creado el formulario y la vista del tablero junto con sus correspondientes
 Se ha añadido la opción de crear tableros personalizados controlando todas las opciones de error posibles y teniendo en cuenta las imágenes que tenemos.
 
 **Dificultades encontradas**
-- dificultad para conseguir encajar las opciones personalizadas.
+- Dificultad para conseguir encajar las opciones personalizadas.
 
 **Soluciones aplicadas**
-- reorganización de los tableros.
+- Reorganización de los tableros.
 
 **Fuentes consultadas**
 -https://developer.mozilla.org/en-US/docs/Web/API/Document/DOMContentLoaded_event
@@ -61,7 +61,7 @@ Se programa el volteo de cartas correctamente y la comparación de parejas, comp
 - Hacer funcionar de manera correcta el aleatorio
 
 **Soluciones aplicadas**
-- revisión de código y manuales
+- Revisión de código y manuales
 
 **Fuentes consultadas**
 - https://www.w3schools.com/js/js_htmldom_nodes.asp
@@ -71,7 +71,7 @@ Se programa el volteo de cartas correctamente y la comparación de parejas, comp
 
 **Ideas de mejora futura**
 - Buscar la mejor manera de hacer las cosas a la primera para no tener que volver a trabajar sobre lo mismo.
-- mejorar el color verde
+- Mejorar el color verde
 
 
 
@@ -85,7 +85,7 @@ Se ha programado el reloj para que funcione al realizar el primer click y solo s
 - Que el contador se actualice en la pantalla
 
 **Soluciones aplicadas**
-- ir actualizando el div para que aparezca
+- Ir actualizando el div para que aparezca
 
 **Fuentes consultadas**
 - https://developer.mozilla.org/es/docs/Web/JavaScript
@@ -94,7 +94,7 @@ Se ha programado el reloj para que funcione al realizar el primer click y solo s
 - Cambio de aspecto de la página buscando uno más desarrollado.
 
 **Ideas de mejora futura**
-- revisar el diseño
+- Revisar el diseño
 
 
 
@@ -116,11 +116,11 @@ Se ha programado el ranking para que aparezca en la pantalla del resumen final c
 - https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Global_Objects/Array/join
 
 **Decisiones tecnicas**
--Se ha añadido un tema nuevo más acorde a la estética adquirida.
--Se decide crear los rakings de esta manera porque se cree que es en la que mejor queda.
+- Se ha añadido un tema nuevo más acorde a la estética adquirida.
+- Se decide crear los rakings de esta manera porque se cree que es en la que mejor queda.
 
 **Ideas de mejora futura**
--posible cambio de temas acordes a la estetica adquirida.
+- Posible cambio de temas acordes a la estetica adquirida.
 
 
 
