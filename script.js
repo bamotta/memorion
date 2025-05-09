@@ -630,11 +630,13 @@ function showRankings() {
 //funcion para compartir en Facebook
 function shareOnFacebook(username, gameLevel, moves, time) {
     const timeFormatted = formatTime(time);
-    const shareText = `He jugado al juego de memoria (${gameLevel}) con ${moves} movimientos en ${timeFormatted}. ¿Puedes superarme?`;
+    const shareText = `He jugado MEMORION (${gameLevel}) con ${moves} movimientos en ${timeFormatted}. ¿Puedes superarme?`;
+    const urlToShare = "https://bamotta.github.io/memorion/";
 
-    const facebookShareUrl = `https://www.facebook.com/sharer/sharer.php?u=https://bamotta.github.io/memorion/=${encodeURIComponent(shareText)}`;
-
-    window.open(facebookShareUrl, '_blank');
+    navigator.clipboard.writeText(shareText).then(() => {
+        alert("Texto copiado al portapapeles. Pégalo en tu publicación de Facebook.");
+        window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(urlToShare)}&quote=${encodeURIComponent(shareText)}`, "_blank")
+    });
 }
 
 // Función para mostrar el easter egg
