@@ -628,17 +628,13 @@ function showRankings() {
 }
 
 //funcion para compartir en Facebook
-function shareOnFacebook(username, gameLevel, moves, time){
+function shareOnFacebook(username, gameLevel, moves, time) {
+    const timeFormatted = formatTime(time);
+    const shareText = `He jugado al juego de memoria (${gameLevel}) con ${moves} movimientos en ${timeFormatted}. ¿Puedes superarme?`;
 
-    const formattedTime = time > 0 ? formatTime(time) : "sin temporizador";
-    const shareText = `¡${username} completó el nivel ${gameLevel} con ${moves} movimientos en ${formattedTime}! ¿Puedes superarlo?`;
+    const facebookShareUrl = `https://www.facebook.com/sharer/sharer.php?u=https://bamotta.github.io/memorion/=${encodeURIComponent(shareText)}`;
 
-    const shareUrl = encodeURIComponent("https://memorion.com"); //en caso de no ser un localhost se pondría la url
-    const quote = encodeURIComponent(shareText);
-
-    const facebookUrl = `https://www.facebook.com/sharer.php?u=${shareUrl}&quote=${quote}`;
-
-    window.open(facebookUrl, '_blank', 'width=600', 'heigth=400');
+    window.open(facebookShareUrl, '_blank');
 }
 
 // Función para mostrar el easter egg
@@ -648,7 +644,7 @@ function showEasterEgg() {
     title.style.transform = "rotateY(360deg)";
 
     setTimeout(() => {
-        alert("Escribid lo que queráis");
+        alert("¿QUÉ LE DIJO UNA CARTA A SU PAREJA? \n¡Por fin te encuentro! Pensé que ibas a seguir dandome la espalda toda la vida.");
         title.style.transform = "none"; // Restablecer la rotación
     }, 500); // Mostrar el mensaje después de la animación
 }
