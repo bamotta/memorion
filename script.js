@@ -582,9 +582,22 @@ function showRankings() {
     closeButton.textContent = "Cerrar";
     closeButton.id = "close-rankings";
 
-    rankingsDiv.append(title, buttonsDiv, table, closeButton);
+    const clearButton = document.createElement('button');
+    clearButton.textContent = "Limpiar Ranking";
+    clearButton.id = "clear-rankings";
+
+
+    rankingsDiv.append(title, buttonsDiv, table, closeButton, clearButton);
 
     document.body.appendChild(rankingsDiv);
+
+    clearButton.addEventListener('click', () => {
+        if (confirm("¿Estás seguro de que deseas eliminar todos los rankings?")) {
+            localStorage.removeItem('gameResults');
+            rankingsDiv.remove(); // Cierra la ventana de rankings
+            alert("Ranking eliminado.");
+        }
+    });
 
     // Función para actualizar la tabla según el criterio seleccionado
     function updateRankingsTable(sortBy) {
